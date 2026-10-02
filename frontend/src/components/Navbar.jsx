@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
 import {
   Eye, Shield, User, HardHat, Compass, ChevronDown,
-  Award, LogOut, FlaskConical, Menu, X, Bell, ArrowRight,
+  Award, LogOut, FlaskConical, Menu, X, Bell, ArrowRight, Sun, Moon,
 } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -62,6 +62,13 @@ export default function Navbar({ activeTab, setActiveTab }) {
   const [notifs, setNotifs] = useState([]);
   const [unread, setUnread] = useState(0);
   const [scrolled, setScrolled] = useState(false);
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem('swachdrishti.theme') === 'dark' ? 'dark' : 'light';
+    } catch {
+      return 'light';
+    }
+  });
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -79,6 +86,21 @@ export default function Navbar({ activeTab, setActiveTab }) {
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    document.documentElement.style.colorScheme = theme;
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(prev => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      try {
+        localStorage.setItem('swachdrishti.theme', next);
+      } catch {}
+      return next;
+    });
+  };
 
   useEffect(() => {
     setMobileOpen(false);
@@ -180,7 +202,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
                 <span className={dark ? 'text-white' : 'text-ink-950'}>Swach</span>
                 <span className={dark ? 'text-lime-400' : 'text-leaf-500'}>Drishti</span>
               </span>
-              <span className={`mt-0.5 block text-xs font-semibold uppercase tracking-[0.14em] ${dark ? 'text-white/45' : 'text-slate-400'}`}>
+              <span className={`mt-0.5 block text-xs font-semibold uppercase tracking-[0.14em] ${dark ? 'text-white/60' : 'text-slate-500'}`}>
                 Civic Operations
               </span>
             </span>
@@ -249,7 +271,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
                         </button>
                       </div>
                       {notifs.length === 0 && (
-                        <div className="px-3 py-8 text-center text-sm text-slate-400">All caught up.</div>
+                        <div className="px-3 py-8 text-center text-sm text-slate-500">All caught up.</div>
                       )}
                       {notifs.slice(0, 12).map(n => (
                         <button
@@ -261,7 +283,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
                           <span className="min-w-0">
                             <span className="block truncate text-xs font-bold text-ink-900">{n.title}</span>
                             <span className="block text-xs text-slate-500 line-clamp-2">{n.body}</span>
-                            <span className="mono block text-xs text-slate-400">{new Date(n.created_at).toLocaleString()}</span>
+                            <span className="mono block text-xs text-slate-500">{new Date(n.created_at).toLocaleString()}</span>
                           </span>
                         </button>
                       ))}
@@ -336,6 +358,20 @@ export default function Navbar({ activeTab, setActiveTab }) {
                 Login / Sign up
               </button>
             )}
+
+            {/* Light / dark theme toggle (persisted: swachdrishti.theme) */}
+            <button
+              onClick={toggleTheme}
+              aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+              title={theme === 'dark' ? 'Light theme' : 'Dark theme'}
+              className={`flex h-9 w-9 items-center justify-center rounded-xl border transition-all duration-200 hover:-translate-y-0.5 ${
+                dark ? 'border-white/15 bg-white/[0.06] text-white/80 hover:text-white' : 'border-black/[0.06] bg-white/70 text-ink-700 hover:text-ink-950'
+              }`}
+            >
+              {theme === 'dark'
+                ? <Sun className="h-4 w-4" strokeWidth={1.75} />
+                : <Moon className="h-4 w-4" strokeWidth={1.75} />}
+            </button>
 
             {/* Demo persona switcher */}
             <div className="relative" ref={demoRef}>
@@ -421,13 +457,24 @@ export default function Navbar({ activeTab, setActiveTab }) {
                   Swach<span className="text-lime-400">Drishti</span>
                 </span>
               </div>
-              <button
-                onClick={() => setMobileOpen(false)}
-                aria-label="Close navigation menu"
-                className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/[0.06] text-white"
-              >
-                <X className="h-5 w-5" />
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={toggleTheme}
+                  aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+                  className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/[0.06] text-white"
+                >
+                  {theme === 'dark'
+                    ? <Sun className="h-5 w-5" strokeWidth={1.75} />
+                    : <Moon className="h-5 w-5" strokeWidth={1.75} />}
+                </button>
+                <button
+                  onClick={() => setMobileOpen(false)}
+                  aria-label="Close navigation menu"
+                  className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-white/[0.06] text-white"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto px-4 pb-8">

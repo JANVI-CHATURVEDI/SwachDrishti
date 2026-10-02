@@ -542,3 +542,272 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ============================================================
+   Dark theme — enabled by `.dark` on <html> (persisted as
+   swachdrishti.theme). Unlayered on purpose so it wins over
+   the Tailwind utility layer without touching component JSX.
+   ============================================================ */
+.dark {
+  color-scheme: dark;
+}
+.dark body {
+  background-color: #06120d;
+  color: #e9f7f0;
+}
+.dark ::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dark ::selection {
+  background: #bef264;
+  color: #06120d;
+}
+
+/* ---- surfaces ---- */
+.dark .bg-white,
+.dark .bg-gray-50 {
+  background-color: #0d211a;
+}
+.dark .bg-white\/95,
+.dark .bg-white\/90 {
+  background-color: rgb(13 33 26 / 0.96);
+}
+.dark .bg-white\/80,
+.dark .bg-white\/70 {
+  background-color: rgb(13 33 26 / 0.82);
+}
+.dark .bg-paper,
+.dark .bg-paper-2,
+.dark .bg-paper-2\/40,
+.dark .bg-paper-2\/50,
+.dark .bg-paper-2\/60,
+.dark .bg-paper-2\/70 {
+  background-color: #0a1a14;
+}
+.dark .glass-light {
+  background-color: rgb(13 33 26 / 0.78);
+  border-color: rgb(255 255 255 / 0.1);
+  color: #e9f7f0;
+}
+.dark .card,
+.dark .civic-card {
+  background-color: #0d211a;
+  border-color: rgb(255 255 255 / 0.08);
+}
+.dark .bg-slate-50,
+.dark .bg-slate-100,
+.dark .bg-slate-50\/60,
+.dark .bg-slate-50\/50 {
+  background-color: rgb(255 255 255 / 0.05);
+}
+
+/* ---- tinted alert / status surfaces ---- */
+.dark .bg-emerald-50,
+.dark .bg-emerald-50\/60,
+.dark .bg-emerald-50\/70,
+.dark .bg-emerald-50\/40,
+.dark .bg-leaf-50,
+.dark .bg-leaf-50\/60,
+.dark .bg-leaf-50\/70,
+.dark .bg-lime-50 {
+  background-color: rgb(16 185 129 / 0.13);
+}
+.dark .bg-rose-50,
+.dark .bg-rose-50\/60 {
+  background-color: rgb(244 63 94 / 0.14);
+}
+.dark .bg-amber-50,
+.dark .bg-amber-50\/60 {
+  background-color: rgb(245 158 11 / 0.14);
+}
+.dark .bg-blue-50,
+.dark .bg-sky-50,
+.dark .bg-cyan-50 {
+  background-color: rgb(56 189 248 / 0.14);
+}
+.dark .bg-indigo-50,
+.dark .bg-violet-50,
+.dark .bg-purple-50 {
+  background-color: rgb(129 140 248 / 0.16);
+}
+.dark .bg-lime-400\/40,
+.dark .bg-lime-400\/30,
+.dark .bg-lime-400\/35 {
+  background-color: rgb(190 242 100 / 0.16);
+}
+
+/* ---- text ---- */
+.dark .text-slate-900,
+.dark .text-gray-900,
+.dark .text-ink-900,
+.dark .text-ink-950 {
+  color: #e9f7f0;
+}
+.dark .text-slate-800,
+.dark .text-slate-700,
+.dark .text-ink-800 {
+  color: #d4e9e0;
+}
+.dark .text-slate-600,
+.dark .text-slate-500,
+.dark .text-ink-700 {
+  color: #a3bdb2;
+}
+.dark .text-slate-400,
+.dark .text-slate-300,
+.dark .text-slate-200 {
+  color: #7f9a8f;
+}
+.dark .text-emerald-600,
+.dark .text-emerald-700,
+.dark .text-emerald-800,
+.dark .text-emerald-900,
+.dark .text-leaf-600,
+.dark .text-leaf-700,
+.dark .text-leaf-800 {
+  color: #6ee7b7;
+}
+.dark .text-rose-600,
+.dark .text-rose-700,
+.dark .text-rose-800,
+.dark .text-rose-900 {
+  color: #fda4af;
+}
+.dark .text-amber-600,
+.dark .text-amber-700,
+.dark .text-amber-800,
+.dark .text-amber-900 {
+  color: #fcd34d;
+}
+.dark .text-blue-600,
+.dark .text-blue-700,
+.dark .text-blue-800 {
+  color: #93c5fd;
+}
+.dark .text-indigo-600,
+.dark .text-indigo-700,
+.dark .text-indigo-800,
+.dark .text-violet-700 {
+  color: #a5b4fc;
+}
+.dark .text-cyan-700,
+.dark .text-teal-700 {
+  color: #67e8f9;
+}
+.dark .text-lime-600,
+.dark .text-lime-700 {
+  color: #d9f99d;
+}
+.dark .text-ink-800\/70 {
+  color: rgb(233 247 240 / 0.7);
+}
+
+/* ---- borders / dividers ---- */
+.dark .border-slate-100,
+.dark .border-slate-200,
+.dark .border-black\/\[0\.04\],
+.dark .border-black\/\[0\.05\],
+.dark .border-black\/\[0\.06\],
+.dark .border-black\/\[0\.08\],
+.dark .border-emerald-100,
+.dark .border-emerald-200,
+.dark .border-leaf-200,
+.dark .border-rose-100,
+.dark .border-rose-200,
+.dark .border-amber-200,
+.dark .border-blue-100,
+.dark .border-blue-200,
+.dark .border-indigo-100,
+.dark .border-indigo-200,
+.dark .border-cyan-200,
+.dark .border-sky-200 {
+  border-color: rgb(255 255 255 / 0.1);
+}
+.dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+.dark .divide-black\/\[0\.05\] > :not([hidden]) ~ :not([hidden]) {
+  border-color: rgb(255 255 255 / 0.07);
+}
+.dark .border-t-black\/\[0\.05\],
+.dark .border-b-black\/\[0\.05\],
+.dark .border-b-slate-100,
+.dark .border-t-slate-100 {
+  border-color: rgb(255 255 255 / 0.08);
+}
+.dark .ring-black\/\[0\.04\],
+.dark .ring-black\/\[0\.05\],
+.dark .ring-black\/\[0\.06\],
+.dark .ring-slate-100,
+.dark .ring-slate-200,
+.dark .ring-emerald-200,
+.dark .ring-leaf-200 {
+  --tw-ring-color: rgb(255 255 255 / 0.12);
+}
+
+/* ---- form controls ---- */
+.dark .input,
+.dark select,
+.dark textarea {
+  background-color: rgb(255 255 255 / 0.06);
+  border-color: rgb(255 255 255 / 0.14);
+  color: #e9f7f0;
+}
+.dark .input::placeholder,
+.dark textarea::placeholder {
+  color: #7f9a8f;
+}
+.dark .input:focus,
+.dark select:focus,
+.dark textarea:focus {
+  border-color: #34d399;
+  box-shadow: 0 0 0 4px rgb(52 211 153 / 0.2);
+}
+.dark select option {
+  background-color: #0d211a;
+  color: #e9f7f0;
+}
+.dark input[type='file']::file-selector-button {
+  background-color: rgb(190 242 100 / 0.15);
+  color: #d9f99d;
+  border: 0;
+}
+
+/* ---- buttons ---- */
+.dark .btn-dark {
+  background-color: #e9f7f0;
+  color: #06120d;
+}
+.dark .btn-dark:hover:not(:disabled) {
+  background-color: #ffffff;
+}
+.dark .btn-outline {
+  color: #e9f7f0;
+  border-color: rgb(255 255 255 / 0.22);
+}
+.dark .btn-outline:hover:not(:disabled) {
+  background-color: rgb(52 211 153 / 0.12);
+  border-color: #34d399;
+  color: #a7f3d0;
+}
+.dark .btn-soft {
+  background-color: rgb(16 185 129 / 0.14);
+  border-color: rgb(52 211 153 / 0.35);
+  color: #a7f3d0;
+}
+.dark .btn-soft:hover:not(:disabled) {
+  background-color: rgb(16 185 129 / 0.22);
+}
+.dark .chip {
+  background-color: rgb(255 255 255 / 0.06);
+  border-color: rgb(255 255 255 / 0.12);
+  color: #d4e9e0;
+}
+.dark .shimmer {
+  background: linear-gradient(
+    100deg,
+    rgb(255 255 255 / 0.05) 20%,
+    rgb(255 255 255 / 0.1) 40%,
+    rgb(255 255 255 / 0.05) 60%
+  );
+  background-size: 200% 100%;
+}
+
