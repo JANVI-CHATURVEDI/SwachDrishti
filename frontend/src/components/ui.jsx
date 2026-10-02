@@ -180,7 +180,7 @@ export function Stat({ label, value, trend, icon: Icon = null, tone = 'neutral',
         <div className="mt-2 text-xs font-semibold uppercase tracking-[0.08em] text-slate-500">{label}</div>
       </div>
       {trend !== undefined && trend !== null && (
-        <span className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-1 text-2xs font-bold ${trendTone}`}>
+        <span className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-1 text-xs font-bold ${trendTone}`}>
           <TrendIcon className="h-3 w-3" strokeWidth={2} />
           {typeof trend === 'number' ? `${trend > 0 ? '+' : ''}${trend}` : trend}
         </span>

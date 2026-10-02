@@ -1,8 +1,17 @@
 import React, { useState } from 'react';
 import api from '../api/client';
-import { UserPlus, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { UserPlus, AlertCircle, CheckCircle2, HardHat, Compass } from 'lucide-react';
 
 const ZONES = ['Zone 1 - Central', 'Zone 2 - South', 'Zone 3 - East', 'Zone 4 - West', 'Zone 5 - North'];
+
+function Field({ label, children, className = '' }) {
+  return (
+    <label className={`block ${className}`}>
+      <span className="mb-1.5 block text-xs font-semibold text-slate-600">{label}</span>
+      {children}
+    </label>
+  );
+}
 
 export default function StaffCreator({ onCreated, allowSupervisorRole = false }) {
   const [form, setForm] = useState({
@@ -43,47 +52,108 @@ export default function StaffCreator({ onCreated, allowSupervisorRole = false })
     }
   };
 
-  const inputCls = 'w-full px-3 py-2 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-emerald-500 focus:outline-none bg-white';
+  const roles = allowSupervisorRole
+    ? [
+        { id: 'WORKER', label: 'Sanitation Worker', icon: HardHat, hint: 'Route + proofs' },
+        { id: 'SUPERVISOR', label: 'Supervisor', icon: Compass, hint: 'Dispatch + audit' },
+      ]
+    : [{ id: 'WORKER', label: 'Sanitation Worker', icon: HardHat, hint: 'Route + proofs' }];
 
   return (
-    <form onSubmit={submit} className="space-y-3">
+    <form onSubmit={submit} className="space-y-4">
       {error && (
-        <div className="flex items-start gap-2 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
-          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" /> {error}
+        <div className="flex items-start gap-2 rounded-xl border border-rose-200 bg-rose-50 p-3 text-xs font-semibold text-rose-700">
+          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" /> {error}
         </div>
       )}
       {ok && (
-        <div className="flex items-start gap-2 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">
-          <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" /> {ok}
+        <div className="flex items-start gap-2 rounded-xl border border-leaf-200 bg-leaf-50 p-3 text-xs font-semibold text-leaf-700">
+          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" /> {ok}
         </div>
       )}
-      <div className="grid grid-cols-2 gap-2.5">
-        <input placeholder="First name" value={form.first_name} onChange={set('first_name')} className={inputCls} />
-        <input placeholder="Last name" value={form.last_name} onChange={set('last_name')} className={inputCls} />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Field label="First name">
+          <input placeholder="Ramesh" value={form.first_name} onChange={set('first_name')} className="input" />
+        </Field>
+        <Field label="Last name">
+          <input placeholder="Kumar" value={form.last_name} onChange={set('last_name')} className="input" />
+        </Field>
       </div>
-      <div className="grid grid-cols-2 gap-2.5">
-        <input placeholder="Username (login id)" value={form.username} onChange={set('username')} className={inputCls} required autoComplete="off" />
-        <input placeholder="Password (min 8 chars)" type="password" value={form.password} onChange={set('password')} className={inputCls} required minLength={8} autoComplete="new-password" />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Field label="Username (login id)">
+          <input
+            placeholder="worker01"
+            value={form.username}
+            onChange={set('username')}
+            className="input"
+            required
+            autoComplete="off"
+          />
+        </Field>
+        <Field label="Password (min 8 chars)">
+          <input
+            type="password"
+            placeholder="••••••••"
+            value={form.password}
+            onChange={set('password')}
+            className="input"
+            required
+            minLength={8}
+            autoComplete="new-password"
+          />
+        </Field>
       </div>
-      <div className="grid grid-cols-2 gap-2.5">
-        <input placeholder="Email (optional)" type="email" value={form.email} onChange={set('email')} className={inputCls} />
-        <input placeholder="Phone, e.g. +919876543210" value={form.phone} onChange={set('phone')} className={inputCls} />
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Field label="Email (optional)">
+          <input type="email" placeholder="crew@city.gov" value={form.email} onChange={set('email')} className="input" />
+        </Field>
+        <Field label="Phone">
+          <input placeholder="+919876543210" value={form.phone} onChange={set('phone')} className="input" />
+        </Field>
       </div>
-      <div className="grid grid-cols-2 gap-2.5">
-        <select value={form.zone} onChange={set('zone')} className={inputCls}>
+
+      <Field label="Zone">
+        <select value={form.zone} onChange={set('zone')} className="input">
           {ZONES.map(z => <option key={z} value={z}>{z}</option>)}
         </select>
-        <select value={form.role} onChange={set('role')} className={inputCls}>
-          <option value="WORKER">Sanitation Worker</option>
-          {allowSupervisorRole && <option value="SUPERVISOR">Supervisor</option>}
-        </select>
+      </Field>
+
+      <div>
+        <span className="mb-1.5 block text-xs font-semibold text-slate-600">Role</span>
+        <div className={`grid gap-2 rounded-2xl bg-paper-2 p-1 ring-1 ring-black/[0.05] ${roles.length > 1 ? 'grid-cols-2' : 'grid-cols-1'}`}>
+          {roles.map((r) => {
+            const active = form.role === r.id;
+            return (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => { setForm(f => ({ ...f, role: r.id })); setOk(''); }}
+                aria-pressed={active}
+                className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold transition-all duration-200
+                  ${active
+                    ? 'bg-white text-ink-900 shadow-soft ring-1 ring-black/[0.06]'
+                    : 'text-slate-500 hover:text-ink-800'}`}
+              >
+                <r.icon className="h-4 w-4" strokeWidth={1.75} />
+                <span className="truncate">{r.label}</span>
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-1.5 text-xs text-slate-400">
+          {roles.find(r => r.id === form.role)?.hint}
+        </p>
       </div>
+
       <button
         type="submit"
         disabled={busy}
-        className="w-full py-2.5 rounded-xl bg-emerald-600 text-white text-xs font-bold hover:bg-emerald-700 disabled:opacity-60 transition flex items-center justify-center gap-2"
+        className="btn-dark w-full"
       >
-        <UserPlus className="w-4 h-4" />
+        <UserPlus className="h-4 w-4" strokeWidth={1.75} />
         {busy ? 'Creating…' : `Create ${form.role === 'SUPERVISOR' ? 'supervisor' : 'worker'} account`}
       </button>
     </form>
