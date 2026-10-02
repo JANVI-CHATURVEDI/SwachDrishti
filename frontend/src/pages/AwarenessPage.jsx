@@ -5,6 +5,7 @@ import {
   Search, Trash2, Navigation, RefreshCw,
   ChevronDown, ChevronUp, Zap,
 } from 'lucide-react';
+import { Reveal } from '../components/motion';
 
 const ITEM_RULES = [
   { keys: ['battery', 'batteries', 'aa', 'cell'], bin: 'Domestic Hazardous (Red Bin)', color: '#EF4444', tip: 'Never toss in household waste — tape the terminals and drop at a hazardous/e-waste counter.' },
@@ -216,38 +217,46 @@ export default function AwarenessPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-10">
-      <div className="relative overflow-hidden bg-gradient-to-r from-teal-600 via-emerald-600 to-green-600 rounded-2xl p-6 sm:p-8 text-white shadow-lg">
-        <div className="absolute -right-10 -top-10 w-56 h-56 rounded-full bg-white/10" />
-        <div className="absolute -right-4 top-16 w-28 h-28 rounded-full bg-white/10" />
-        <div className="relative">
-          <span className="text-xs font-semibold tracking-wider uppercase bg-white/20 px-3 py-1 rounded-full">
-            Civic Education & Circular Economy
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold mt-3 tracking-tight">
-            Know Your Waste &amp; Segregate Smartly
-          </h1>
-          <p className="text-teal-100 mt-1 max-w-xl text-sm">
-            Proper segregation at source eliminates 70% of municipal dump pileups. Ask where an item
-            goes, learn the colour codes, take the civic quiz, and locate dry waste deposit centers.
-          </p>
+      <Reveal>
+        <div className="relative overflow-hidden rounded-3xl border border-black/[0.06] bg-white p-6 shadow-soft sm:p-8">
+          <div
+            className="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-gradient-to-br from-lime-400/40 to-leaf-500/25 blur-2xl"
+            aria-hidden="true"
+          />
+          <div
+            className="pointer-events-none absolute -left-20 -bottom-28 h-56 w-56 rounded-full bg-gradient-to-br from-leaf-500/25 to-cyan-400/20 blur-2xl"
+            aria-hidden="true"
+          />
+          <div className="relative">
+            <span className="eyebrow">Civic Education &amp; Circular Economy</span>
+            <h1 className="h-section mt-3 text-ink-950">
+              Know Your Waste &amp; Segregate Smartly
+            </h1>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-500">
+              Proper segregation at source eliminates 70% of municipal dump pileups. Ask where an item
+              goes, learn the colour codes, take the civic quiz, and locate dry waste deposit centers.
+            </p>
 
-          <div className="flex flex-wrap gap-3 mt-4">
-            {stats.map(s => (
-              <div key={s.label} className="bg-white/15 backdrop-blur px-3 py-2 rounded-xl flex items-center gap-2">
-                <s.icon className="w-4 h-4" />
-                <span className="text-lg font-extrabold leading-none">{s.value}</span>
-                <span className="text-[11px] text-teal-100 font-semibold">{s.label}</span>
-              </div>
-            ))}
+            <div className="mt-5 flex flex-wrap gap-3">
+              {stats.map(s => (
+                <div key={s.label} className="flex items-center gap-2 rounded-2xl border border-black/[0.06] bg-paper-2/70 px-4 py-2.5">
+                  <span className="grid h-8 w-8 place-items-center rounded-xl bg-gradient-to-br from-lime-400 to-leaf-500 text-ink-950">
+                    <s.icon className="h-4 w-4" strokeWidth={1.75} />
+                  </span>
+                  <span className="stat-number text-lg font-semibold leading-none text-ink-900">{s.value}</span>
+                  <span className="text-xs font-semibold text-slate-500">{s.label}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
+      </Reveal>
 
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+      <div className="card space-y-4 p-6">
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-emerald-600" />
-          <h2 className="font-bold text-slate-900 text-base">Where does it go?</h2>
-          <span className="text-[11px] text-slate-400 font-semibold hidden sm:inline">
+          <h2 className="h-card text-base text-ink-900">Where does it go?</h2>
+          <span className="text-xs text-slate-400 font-semibold hidden sm:inline">
             type any household item
           </span>
         </div>
@@ -259,7 +268,7 @@ export default function AwarenessPage() {
             value={lookup}
             onChange={(e) => setLookup(e.target.value)}
             placeholder='Try "batteries", "tea leaves", "chip packet", "tube light"…'
-            className="w-full pl-9 pr-3 py-3 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+            className="input pl-9"
           />
         </div>
 
@@ -268,7 +277,7 @@ export default function AwarenessPage() {
             <button
               key={t}
               onClick={() => setLookup(t)}
-              className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-slate-100 text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200 transition"
+              className="chip hover:border-leaf-300 hover:bg-leaf-50 hover:text-leaf-700"
             >
               {t}
             </button>
@@ -283,7 +292,7 @@ export default function AwarenessPage() {
               <Trash2 className="w-4 h-4" />
             </div>
             <div className="min-w-0">
-              <div className="text-[11px] uppercase tracking-wide font-bold" style={{ color: lookupResult.color }}>
+              <div className="text-xs uppercase tracking-wide font-bold" style={{ color: lookupResult.color }}>
                 Dispose in
               </div>
               <div className="font-bold text-sm text-slate-900">{lookupResult.bin}</div>
@@ -304,7 +313,7 @@ export default function AwarenessPage() {
               value={guideQuery}
               onChange={(e) => setGuideQuery(e.target.value)}
               placeholder="Filter streams or items…"
-              className="pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-xs w-full sm:w-56 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              className="input w-full pl-9 sm:w-56"
             />
           </div>
         </div>
@@ -324,7 +333,7 @@ export default function AwarenessPage() {
                 <div className="p-5 space-y-2" style={{ backgroundColor: `${accent}0f` }}>
                   <div className="flex items-start justify-between gap-2">
                     <div className="text-3xl">{emoji}</div>
-                    <span className="text-[10px] font-bold uppercase tracking-wide px-2 py-1 rounded-full text-white"
+                    <span className="text-xs font-bold uppercase tracking-wide px-2 py-1 rounded-full text-white"
                           style={{ backgroundColor: accent }}>
                       {belongs.length || '—'} items
                     </span>
@@ -373,7 +382,7 @@ export default function AwarenessPage() {
 
                 <button
                   onClick={() => setOpenGuide(isOpen ? null : (g.id || g.slug || idx))}
-                  className="w-full py-2.5 text-[11px] font-bold text-slate-500 hover:bg-slate-50 border-t border-slate-100 flex items-center justify-center gap-1 transition"
+                  className="flex w-full items-center justify-center gap-1.5 border-t border-black/[0.05] bg-paper-2/40 py-2.5 text-xs font-bold text-slate-500 transition hover:bg-paper-2 hover:text-ink-800"
                 >
                   {isOpen ? 'Show less' : 'What goes in / disposal tips'}
                   {isOpen ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
@@ -382,23 +391,23 @@ export default function AwarenessPage() {
             );
           })}
           {loading && [1, 2, 3].map(i => (
-            <div key={i} className="h-56 rounded-2xl border border-slate-200 bg-slate-100 animate-pulse" />
+            <div key={i} className="h-56 animate-pulse rounded-3xl border border-black/[0.05] bg-paper-2" />
           ))}
         </div>
         {!loading && filteredGuides.length === 0 && (
-          <div className="p-4 text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-xl">
+          <div className="rounded-2xl border border-black/[0.05] bg-paper-2/60 p-4 text-xs text-slate-600">
             No stream matches “{guideQuery}”. Clear the filter to see all {shownGuides.length} streams.
           </div>
         )}
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
+      <div className="card space-y-6 p-6">
         <div className="flex items-center justify-between border-b border-slate-100 pb-4 gap-3 flex-wrap">
           <div className="flex items-center gap-2">
             <Award className="w-5 h-5 text-amber-500" />
-            <h3 className="font-bold text-slate-900 text-base">Civic Waste IQ Quiz</h3>
+            <h3 className="h-card text-base text-ink-900">Civic Waste IQ Quiz</h3>
             {shownQuizzes[currentQuizIndex]?.difficulty && !quizFinished && (
-              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+              <span className="text-xs font-bold uppercase px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
                 {shownQuizzes[currentQuizIndex].difficulty}
               </span>
             )}
@@ -417,8 +426,8 @@ export default function AwarenessPage() {
         </div>
 
         {shownQuizzes.length > 0 && !quizFinished && (
-          <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-            <div className="h-full bg-emerald-500 transition-all duration-500 rounded-full"
+          <div className="h-2.5 w-full overflow-hidden rounded-full bg-black/[0.06]">
+            <div className="h-full rounded-full bg-gradient-to-r from-lime-400 to-leaf-500 transition-all duration-500"
                  style={{ width: `${quizPct}%` }} />
           </div>
         )}
@@ -449,7 +458,7 @@ export default function AwarenessPage() {
                     <span>{opt}</span>
                     {isSelected && (fb
                       ? (fb.isCorrect ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />)
-                      : <span className="text-[10px] font-bold text-slate-400">checking…</span>)}
+                      : <span className="text-xs font-bold text-slate-400">checking…</span>)}
                     {!isSelected && isCorrectOption && <Check className="w-4 h-4" />}
                   </button>
                 );
@@ -487,7 +496,7 @@ export default function AwarenessPage() {
             </p>
             <button
               onClick={restartQuiz}
-              className="px-4 py-2 bg-emerald-600 text-white font-bold rounded-xl text-xs hover:bg-emerald-700 inline-flex items-center gap-2"
+              className="btn-primary btn-sm"
             >
               <RefreshCw className="w-3.5 h-3.5" /> Try Again
             </button>
@@ -515,7 +524,7 @@ export default function AwarenessPage() {
               value={pointQuery}
               onChange={(e) => setPointQuery(e.target.value)}
               placeholder="Search zone, name, type…"
-              className="pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-xs w-full sm:w-56 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+              className="input w-full pl-9 sm:w-56"
             />
           </div>
         </div>
@@ -526,26 +535,26 @@ export default function AwarenessPage() {
             const fillColor = fill == null ? '#94A3B8' : fill < 60 ? '#10B981' : fill < 85 ? '#F59E0B' : '#EF4444';
             const hasCoords = pt.latitude != null && pt.longitude != null;
             return (
-              <div key={pt.id || i} className="p-4 bg-white border border-slate-200 rounded-xl shadow-sm space-y-2">
+              <div key={pt.id || i} className="card space-y-2 p-4">
                 <div className="flex items-start justify-between gap-2">
                   <span className="font-bold text-slate-900 text-sm">{pt.name}</span>
                   {pt.is_active === false ? (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-500 border border-slate-200">
                       INACTIVE
                     </span>
                   ) : (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                       OPEN
                     </span>
                   )}
                 </div>
                 <div className="text-xs text-slate-500">{pt.address}</div>
                 <div className="flex flex-wrap gap-1.5">
-                  <span className="text-[11px] text-blue-700 font-semibold bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md">
+                  <span className="text-xs text-blue-700 font-semibold bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-md">
                     {pt.bin_type || pt.type || 'General Material Recovery'}
                   </span>
                   {pt.zone && (
-                    <span className="text-[11px] text-slate-600 font-semibold bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
+                    <span className="text-xs text-slate-600 font-semibold bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-md">
                       {pt.zone}
                     </span>
                   )}
@@ -553,7 +562,7 @@ export default function AwarenessPage() {
 
                 {fill != null && (
                   <div className="space-y-1">
-                    <div className="flex justify-between text-[10px] font-semibold text-slate-500">
+                    <div className="flex justify-between text-xs font-semibold text-slate-500">
                       <span>Capacity used</span><span style={{ color: fillColor }}>{fill}%</span>
                     </div>
                     <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
@@ -564,17 +573,17 @@ export default function AwarenessPage() {
                 )}
 
                 <div className="flex items-center justify-between pt-1">
-                  <span className="text-[11px] text-slate-400">{pt.code && `Code ${pt.code}`}</span>
+                  <span className="text-xs text-slate-400">{pt.code && `Code ${pt.code}`}</span>
                   {hasCoords ? (
                     <a
                       href={`https://www.google.com/maps?q=${pt.latitude},${pt.longitude}`}
                       target="_blank" rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg hover:bg-emerald-100 transition"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-lg hover:bg-emerald-100 transition"
                     >
                       <Navigation className="w-3.5 h-3.5" /> Directions
                     </a>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-slate-400">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400">
                       <MapPin className="w-3.5 h-3.5" /> On-map
                     </span>
                   )}
@@ -583,11 +592,11 @@ export default function AwarenessPage() {
             );
           })}
           {loading && [1, 2].map(i => (
-            <div key={i} className="h-40 rounded-xl border border-slate-200 bg-slate-100 animate-pulse" />
+            <div key={i} className="h-40 animate-pulse rounded-3xl border border-black/[0.05] bg-paper-2" />
           ))}
         </div>
         {!loading && filteredPoints.length === 0 && (
-          <div className="p-4 text-xs text-slate-500 bg-slate-50 border border-slate-200 rounded-xl">
+          <div className="rounded-2xl border border-black/[0.05] bg-paper-2/60 p-4 text-xs text-slate-600">
             No drop-off center matches “{pointQuery}”.
           </div>
         )}
