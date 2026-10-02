@@ -143,7 +143,7 @@ export default function StaffCreator({ onCreated, allowSupervisorRole = false })
             );
           })}
         </div>
-        <p className="mt-1.5 text-xs text-slate-400">
+        <p className="mt-1.5 text-xs text-slate-500">
           {roles.find(r => r.id === form.role)?.hint}
         </p>
       </div>

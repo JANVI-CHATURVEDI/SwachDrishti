@@ -504,7 +504,7 @@ export default function CitizenDashboard() {
             {}
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Photo Evidence <span className="font-normal text-slate-400">(optional, improves AI accuracy)</span>
+                Photo Evidence <span className="font-normal text-slate-500">(optional, improves AI accuracy)</span>
               </label>
               <div className="flex items-center gap-3">
                 <input
@@ -535,11 +535,11 @@ export default function CitizenDashboard() {
                     <Sparkles className="w-3.5 h-3.5" /> AI Suggestion:
                   </span>
                   {aiSummary.ai_suggested && (
-                    <span className="px-2 py-0.5 rounded-full bg-emerald-600 text-white text-xs font-black uppercase tracking-wide">
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-700 text-white text-xs font-black uppercase tracking-wide">
                       AI suggested - you can override
                     </span>
                   )}
-                  <span className="text-xs font-medium text-emerald-600 bg-white/70 px-1.5 py-0.5 rounded">
+                  <span className="text-xs font-medium text-emerald-700 bg-white/80 px-1.5 py-0.5 rounded">
                     {aiSummary.source === 'gemini_vision' ? 'Vision' : aiSummary.source === 'gemini' ? 'Gemini' : 'Heuristic fallback'}
                     {aiSummary.confidence ? ` · ${Math.round(aiSummary.confidence * 100)}%` : ''}
                   </span>
@@ -572,7 +572,7 @@ export default function CitizenDashboard() {
                   </div>
                 )}
                 {aiSummary.translated_text && (
-                  <div className="text-xs text-emerald-600 border-t border-emerald-200 pt-1">
+                  <div className="text-xs text-emerald-700 border-t border-emerald-200 pt-1">
                     Translated from {aiSummary.detected_language}: "{aiSummary.translated_text}"
                   </div>
                 )}
@@ -620,13 +620,13 @@ export default function CitizenDashboard() {
                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                       LIVE · {gpsFix.lat.toFixed(5)}, {gpsFix.lng.toFixed(5)}
                     </span>
-                    <span className="text-slate-400">
+                    <span className="text-slate-500">
                       ±{Math.round(gpsFix.accuracy)}m · {new Date(gpsFix.at).toLocaleTimeString()}
                     </span>
                     <button
                       type="button"
                       onClick={() => setGpsFix(null)}
-                      className="text-slate-400 hover:text-rose-600 font-bold"
+                      className="text-slate-500 hover:text-rose-600 font-bold"
                     >
                       clear
                     </button>
@@ -636,7 +636,7 @@ export default function CitizenDashboard() {
                   <div className="mt-1.5 text-xs text-rose-600 font-semibold">{gpsError}</div>
                 )}
                 <div className="mt-1.5 flex items-center justify-between gap-2">
-                  <span className="text-xs text-slate-400 font-semibold">
+                  <span className="text-xs text-slate-500 font-semibold">
                     {(address || coords.lat !== HOME_SPOT.lat || coords.lng !== HOME_SPOT.lng)
                       ? '✓ Spot remembered for your next report'
                       : 'Spot saves automatically as you type'}
@@ -645,7 +645,7 @@ export default function CitizenDashboard() {
                     <button
                       type="button"
                       onClick={() => { setAddress(''); setCoords({ ...HOME_SPOT }); setGpsFix(null); }}
-                      className="text-xs font-bold text-slate-400 hover:text-rose-600 transition shrink-0"
+                      className="text-xs font-bold text-slate-500 hover:text-rose-600 transition shrink-0"
                     >
                       Reset
                     </button>
@@ -679,7 +679,7 @@ export default function CitizenDashboard() {
         <div ref={formRef} className="card scroll-mt-4 p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-slate-900">Request On-Demand Bulk / E-Waste Pickup</h2>
-            <button onClick={() => setViewTab('pickups')} className="text-slate-400 hover:text-slate-600 text-sm">Cancel</button>
+            <button onClick={() => setViewTab('pickups')} className="text-slate-500 hover:text-slate-600 text-sm">Cancel</button>
           </div>
 
           <form onSubmit={handlePickupSubmit} className="space-y-4">
@@ -800,7 +800,7 @@ export default function CitizenDashboard() {
                     <StatusBadge status={r.status} />
                   </div>
                   <p className="text-xs text-slate-600 line-clamp-2">{r.description || 'No extended description.'}</p>
-                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 font-medium">
+                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 font-medium">
                     <span>📍 {r.address}</span>
                     <span>• {new Date(r.created_at).toLocaleDateString()}</span>
                     <span>• Cat: {r.category_details?.name || 'General'}</span>
@@ -820,12 +820,12 @@ export default function CitizenDashboard() {
                     </button>
                   )}
                   {(r.citizen_verification || r.verification) && (
-                    <span className="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-1 rounded">
+                    <span className="text-xs text-emerald-700 font-semibold bg-emerald-50 px-2 py-1 rounded">
                       ✓ Verified by Citizen
                     </span>
                   )}
 
-                  <span className="hidden sm:flex items-center text-xs font-bold text-slate-400 group-hover:text-emerald-600 transition">
+                  <span className="hidden sm:flex items-center text-xs font-bold text-slate-500 group-hover:text-emerald-700 transition">
                     Open <ChevronRight className="w-4 h-4 ml-0.5" />
                   </span>
                 </div>
@@ -858,7 +858,7 @@ export default function CitizenDashboard() {
                     <StatusBadge status={p.status} />
                   </div>
                   <div className="text-xs text-slate-600">Volume: <strong>{p.estimated_volume}</strong> • Slot: {p.preferred_slot || p.preferred_time}</div>
-                  <div className="text-xs text-slate-400">📍 {p.address}</div>
+                  <div className="text-xs text-slate-500">📍 {p.address}</div>
                 </div>
               </div>
             ))}
@@ -896,7 +896,7 @@ export default function CitizenDashboard() {
                   }}
                 />
               ) : (
-                <div className="w-full h-36 flex items-center justify-center text-slate-400 text-xs font-semibold">
+                <div className="w-full h-36 flex items-center justify-center text-slate-500 text-xs font-semibold">
                   <Camera className="w-5 h-5 mr-2" />
                   {(openReport.image_url || openReport.image)
                     ? 'Photo could not be loaded'
@@ -982,13 +982,13 @@ export default function CitizenDashboard() {
 
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="p-2 bg-slate-50 rounded-lg">
-                  <div className="text-slate-400 uppercase font-bold text-xs">Reported</div>
+                  <div className="text-slate-500 uppercase font-bold text-xs">Reported</div>
                   <div className="text-slate-700 font-semibold">
                     {new Date(openReport.created_at).toLocaleString()}
                   </div>
                 </div>
                 <div className="p-2 bg-slate-50 rounded-lg">
-                  <div className="text-slate-400 uppercase font-bold text-xs">Last update</div>
+                  <div className="text-slate-500 uppercase font-bold text-xs">Last update</div>
                   <div className="text-slate-700 font-semibold">
                     {new Date(openReport.updated_at).toLocaleString()}
                   </div>

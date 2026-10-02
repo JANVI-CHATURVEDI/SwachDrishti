@@ -235,7 +235,7 @@ function FeatureArt({ kind }) {
           <CheckCircle2 className="h-3.5 w-3.5" strokeWidth={2.25} />
         </span>
         <div className="absolute bottom-3 left-3 rounded-xl border border-black/[0.06] bg-white/90 px-3 py-2 text-xs font-bold text-ink-900 shadow-soft backdrop-blur">
-          Zone 3 · <span className="mono text-rose-600">2 critical</span>
+          Zone 3 · <span className="mono text-rose-400">2 critical</span>
         </div>
       </div>
     );
@@ -408,14 +408,14 @@ export default function LandingPage() {
 
       {/* ============ MARQUEE ============ */}
       <section className="relative py-14">
-        <div className="mb-5 text-center text-xs font-semibold uppercase tracking-[0.2em] text-white/40">
+        <div className="mb-5 text-center text-xs font-semibold uppercase tracking-[0.2em] text-white/60">
           One platform, twelve capabilities
         </div>
         <Marquee speed={44} className="[mask-image:linear-gradient(to_right,transparent,#000_8%,#000_92%,transparent)]">
           {CAPABILITIES.map((c) => (
             <span
               key={c}
-              className="flex items-center gap-3 whitespace-nowrap font-display text-2xl font-bold tracking-tight text-white/35 sm:text-3xl"
+              className="flex items-center gap-3 whitespace-nowrap font-display text-2xl font-bold tracking-tight text-white/55 sm:text-3xl"
             >
               {c}
               <span className="h-1.5 w-1.5 rounded-full bg-lime-400/70" />
@@ -593,7 +593,7 @@ export default function LandingPage() {
                   <div className="stat-number text-4xl font-semibold leading-none text-lime-300 sm:text-5xl">
                     <CountUp value={n.value} decimals={n.decimals || 0} suffix={n.suffix} />
                   </div>
-                  <div className="mt-3 text-xs font-semibold uppercase tracking-[0.12em] text-white/45">
+                  <div className="mt-3 text-xs font-semibold uppercase tracking-[0.12em] text-white/60">
                     {n.label}
                   </div>
                 </div>
@@ -651,7 +651,7 @@ export default function LandingPage() {
         </Reveal>
 
         <Reveal delay={0.1}>
-          <div className="mt-8 flex items-center justify-center gap-2.5 text-xs font-semibold text-white/40">
+          <div className="mt-8 flex items-center justify-center gap-2.5 text-xs font-semibold text-white/60">
             <Eye className="h-3.5 w-3.5" />
             Open civic data · auditable priority scores · citizen-verified closures
           </div>

@@ -133,7 +133,7 @@ export default function AdminDashboard() {
       <div className="card p-4">
         <form onSubmit={handleNlSearch} className="flex gap-3">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-500" />
             <input
               type="text"
               placeholder="Ask anything in plain English: 'Show critical road blockage reports near Central Delhi unresolved for 6 hours'..."
@@ -164,7 +164,7 @@ export default function AdminDashboard() {
                   <span className="font-semibold text-slate-800">{item.title}</span>
                   <div className="flex items-center gap-2">
                     <StatusBadge status={item.status} />
-                    <span className="text-slate-400 text-xs">{item.address}</span>
+                    <span className="text-slate-500 text-xs">{item.address}</span>
                   </div>
                 </div>
               ))}
@@ -217,7 +217,7 @@ export default function AdminDashboard() {
                 a.priority === 'HIGH' ? 'border-rose-200' : a.priority === 'MEDIUM' ? 'border-teal-200' : 'border-blue-200'
               }`}>
                 <span className={`text-xs font-bold uppercase ${
-                  a.priority === 'HIGH' ? 'text-rose-600' : a.priority === 'MEDIUM' ? 'text-teal-600' : 'text-blue-600'
+                  a.priority === 'HIGH' ? 'text-rose-700' : a.priority === 'MEDIUM' ? 'text-teal-700' : 'text-blue-700'
                 }`}>
                   Action {i + 1}{a.priority ? ` · ${a.priority}` : ''}
                 </span>
@@ -264,7 +264,7 @@ export default function AdminDashboard() {
                   #{p.id} · {(p.waste_type || 'BULK').replace(/_/g, ' ')}
                 </div>
                 <div className="text-xs text-slate-500 truncate">{p.address}</div>
-                <div className="text-xs text-slate-400">
+                <div className="text-xs text-slate-500">
                   {p.estimated_volume || p.volume || 'Standard load'} · {p.latitude?.toFixed ? `${Number(p.latitude).toFixed(4)}, ${Number(p.longitude).toFixed(4)}` : ''}
                 </div>
               </div>
@@ -339,7 +339,7 @@ export default function AdminDashboard() {
               <AlertOctagon className="w-4 h-4 text-rose-600" />
               Predicted Overflow Risk — next {forecast.horizon_hours}h
             </h3>
-            <span className="text-xs font-bold uppercase px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 border border-rose-100">
+            <span className="text-xs font-bold uppercase px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200">
               {forecast.likely_count} likely to overflow
             </span>
           </div>
@@ -389,7 +389,7 @@ export default function AdminDashboard() {
                 <div className="min-w-0">
                   <div className="font-bold text-slate-900 text-xs truncate">
                     {[w.first_name, w.last_name].filter(Boolean).join(' ') || w.username}
-                    <span className="font-semibold text-slate-400"> · @{w.username}</span>
+                    <span className="font-semibold text-slate-500"> · @{w.username}</span>
                   </div>
                   <div className="text-xs text-slate-500">{w.zone || 'Zone 1 - Central'}{w.phone ? ` · ${w.phone}` : ''}</div>
                 </div>

@@ -197,7 +197,7 @@ export default function SupervisorDashboard() {
                       <StatusBadge status={report.status} />
                     </div>
                     <div className="text-xs text-slate-600 line-clamp-1">{report.address}</div>
-                    <div className="text-xs text-slate-400">Severity: {report.severity} • {new Date(report.created_at).toLocaleDateString()}</div>
+                    <div className="text-xs text-slate-500">Severity: {report.severity} • {new Date(report.created_at).toLocaleDateString()}</div>
                   </div>
 
                   <div className="flex items-center gap-3">
@@ -232,7 +232,7 @@ export default function SupervisorDashboard() {
                       <StatusBadge status={pickup.status} />
                     </div>
                     <div className="text-xs text-slate-600 line-clamp-1">{pickup.address}</div>
-                    <div className="text-xs text-slate-400">
+                    <div className="text-xs text-slate-500">
                       {pickup.estimated_volume || pickup.volume || 'Standard load'} · {pickup.preferred_slot || pickup.preferred_time || 'Any slot'} · {pickup.created_at ? new Date(pickup.created_at).toLocaleDateString() : ''}
                     </div>
                   </div>
@@ -297,7 +297,7 @@ export default function SupervisorDashboard() {
                         {(report.image_url || report.image) ? (
                           <img src={report.image_url || report.image} alt="Before" className="h-32 w-full object-cover rounded-lg border border-slate-200" />
                         ) : (
-                          <div className="h-32 bg-slate-100 rounded-lg flex items-center justify-center text-xs text-slate-400">No before photo</div>
+                          <div className="h-32 bg-slate-100 rounded-lg flex items-center justify-center text-xs text-slate-500">No before photo</div>
                         )}
                       </div>
                       <div className="space-y-1">
@@ -305,7 +305,7 @@ export default function SupervisorDashboard() {
                         {(report.after_image_url || report.after_image) ? (
                           <img src={report.after_image_url || report.after_image} alt="After" className="h-32 w-full object-cover rounded-lg border border-emerald-300" />
                         ) : (
-                          <div className="h-32 bg-slate-100 rounded-lg flex items-center justify-center text-xs text-slate-400">Resolution photo pending</div>
+                          <div className="h-32 bg-slate-100 rounded-lg flex items-center justify-center text-xs text-slate-500">Resolution photo pending</div>
                         )}
                       </div>
                     </div>
@@ -338,7 +338,7 @@ export default function SupervisorDashboard() {
           <details className="rounded-xl border border-dashed border-slate-300 overflow-hidden">
             <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-2.5 text-xs font-bold text-leaf-700 transition hover:bg-leaf-50">
               <span>+ Onboard a field worker</span>
-              <span className="text-slate-400">opens form</span>
+              <span className="text-slate-500">opens form</span>
             </summary>
             <div className="p-4 border-t border-slate-100">
               <StaffCreator onCreated={() => fetchSupervisorData(false)} />

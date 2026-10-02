@@ -268,7 +268,7 @@ export default function MapView({
                     <div className="text-xs leading-snug text-slate-600">{item.address}</div>
                     <div className="flex items-center justify-between gap-2 border-t border-black/[0.06] pt-2.5">
                       <PriorityBadge level={item.priority_level} score={item.priority_score} factors={item.priority_factors} />
-                      <span className="mono text-xs text-slate-400">#{item.id}</span>
+                      <span className="mono text-xs text-slate-500">#{item.id}</span>
                     </div>
                   </div>
                 </div>
@@ -292,7 +292,7 @@ export default function MapView({
                   </span>
                 </div>
                 <div className="space-y-1.5 p-3.5">
-                  <div className="mono text-xs text-slate-400">#{p.id}</div>
+                  <div className="mono text-xs text-slate-500">#{p.id}</div>
                   <div className="text-sm font-bold text-ink-900">{p.waste_type}</div>
                   <div className="text-xs text-slate-600">{p.estimated_volume}</div>
                   <div className="text-xs text-slate-500">{p.address}</div>

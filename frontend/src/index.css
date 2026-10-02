@@ -67,7 +67,7 @@
    ============================================================ */
 @layer components {
   .eyebrow {
-    @apply inline-block text-xs font-semibold uppercase tracking-[0.14em] text-leaf-600;
+    @apply inline-block text-xs font-semibold uppercase tracking-[0.14em] text-leaf-700;
   }
   .eyebrow-dark {
     @apply inline-block text-xs font-semibold uppercase tracking-[0.14em] text-lime-400;
@@ -664,7 +664,8 @@
 .dark .text-emerald-900,
 .dark .text-leaf-600,
 .dark .text-leaf-700,
-.dark .text-leaf-800 {
+.dark .text-leaf-800,
+.dark .text-leaf-900 {
   color: #6ee7b7;
 }
 .dark .text-rose-600,

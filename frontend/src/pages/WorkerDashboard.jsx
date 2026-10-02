@@ -267,7 +267,7 @@ export default function WorkerDashboard() {
         <div className="flex flex-col gap-3 rounded-2xl border border-black/[0.06] bg-white p-3.5 shadow-soft sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3 text-xs">
             <span className="font-bold text-slate-800">Dispatch Map</span>
-            <span className="text-slate-400">·</span>
+            <span className="text-slate-500">·</span>
             <span className="text-slate-500">
               {optimizeRoute ? 'Showing priority-weighted nearest-neighbour path' : 'Click a marker or job card to begin'}
             </span>
@@ -354,7 +354,7 @@ export default function WorkerDashboard() {
                       <div className="text-xs text-slate-700 font-medium">
                         {rep ? rep.title : pick ? `Pickup: ${pick.waste_type}` : 'General Sanitation Job'}
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-slate-400">
+                      <div className="flex items-center gap-2 text-xs text-slate-500">
                         <MapPin className="w-3 h-3" />
                         <span>{rep?.address || pick?.address || 'Site Coordinates'}</span>
                       </div>
@@ -385,14 +385,14 @@ export default function WorkerDashboard() {
           {selectedTask ? (
             <div className="space-y-4 text-xs">
               <div className="p-3 bg-slate-50 rounded-xl space-y-1">
-                <div className="text-slate-400 text-xs font-semibold uppercase">Current Job</div>
+                <div className="text-slate-500 text-xs font-semibold uppercase">Current Job</div>
                 <div className="font-bold text-slate-900 text-sm">
                   #{selectedTask.id} - {getTaskReport(selectedTask)?.title || (getTaskPickup(selectedTask) ? `${(getTaskPickup(selectedTask).waste_type || 'BULK').replace(/_/g, ' ')} Pickup #${getTaskPickup(selectedTask).id}` : 'Sanitation Task')}
                 </div>
                 <div className="text-slate-600">{getTaskReport(selectedTask)?.address || getTaskPickup(selectedTask)?.address}</div>
                 <div className="pt-2 flex items-center justify-between">
                   <StatusBadge status={selectedTask.status} />
-                  <span className="text-xs text-slate-400">Updated {new Date(selectedTask.updated_at || Date.now()).toLocaleTimeString()}</span>
+                  <span className="text-xs text-slate-500">Updated {new Date(selectedTask.updated_at || Date.now()).toLocaleTimeString()}</span>
                 </div>
               </div>
 
@@ -433,7 +433,7 @@ export default function WorkerDashboard() {
                   <div className="space-y-2.5">
                     <div>
                       <label className="block text-xs font-bold text-slate-700 mb-1">
-                        Completion Photo <span className="text-slate-400 font-normal">(Powers AI Cleanup Verification)</span>
+                        Completion Photo <span className="text-slate-500 font-normal">(Powers AI Cleanup Verification)</span>
                       </label>
                       <input
                         type="file"
@@ -527,7 +527,7 @@ export default function WorkerDashboard() {
               </div>
             </div>
           ) : (
-            <div className="py-12 text-center text-xs text-slate-400">
+            <div className="py-12 text-center text-xs text-slate-500">
               Select a task from the list or map to start cleaning or mark resolution.
             </div>
           )}

@@ -50,7 +50,7 @@ function BrandPanel({ mode }) {
             <span className="font-display text-xl font-extrabold tracking-tight">
               Swach<span className="text-lime-400">Drishti</span>
             </span>
-            <span className="mt-1 block text-xs font-semibold uppercase tracking-[0.16em] text-white/45">
+            <span className="mt-1 block text-xs font-semibold uppercase tracking-[0.16em] text-white/60">
               Civic Operations
             </span>
           </span>

@@ -256,13 +256,13 @@ export default function AwarenessPage() {
         <div className="flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-emerald-600" />
           <h2 className="h-card text-base text-ink-900">Where does it go?</h2>
-          <span className="text-xs text-slate-400 font-semibold hidden sm:inline">
+          <span className="text-xs text-slate-500 font-semibold hidden sm:inline">
             type any household item
           </span>
         </div>
 
         <div className="relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
           <input
             type="text"
             value={lookup}
@@ -308,7 +308,7 @@ export default function AwarenessPage() {
             <BookOpen className="w-5 h-5 text-emerald-600" /> Waste Stream Separation Standards
           </h2>
           <div className="relative w-full sm:w-auto">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
             <input
               value={guideQuery}
               onChange={(e) => setGuideQuery(e.target.value)}
@@ -413,10 +413,10 @@ export default function AwarenessPage() {
             )}
           </div>
           <div className="flex items-center gap-3 text-xs font-semibold text-slate-500">
-            <span className="flex items-center gap-1 text-amber-600">
+            <span className="flex items-center gap-1 text-amber-700">
               <Zap className="w-3.5 h-3.5" /> streak {quizStreak}
             </span>
-            <span className="flex items-center gap-1 text-emerald-600">
+            <span className="flex items-center gap-1 text-emerald-700">
               <Check className="w-3.5 h-3.5" /> {quizScore} correct
             </span>
             {shownQuizzes.length > 0 && !quizFinished && (
@@ -458,7 +458,7 @@ export default function AwarenessPage() {
                     <span>{opt}</span>
                     {isSelected && (fb
                       ? (fb.isCorrect ? <Check className="w-4 h-4" /> : <X className="w-4 h-4" />)
-                      : <span className="text-xs font-bold text-slate-400">checking…</span>)}
+                      : <span className="text-xs font-bold text-slate-500">checking…</span>)}
                     {!isSelected && isCorrectOption && <Check className="w-4 h-4" />}
                   </button>
                 );
@@ -519,7 +519,7 @@ export default function AwarenessPage() {
             <MapPin className="w-5 h-5 text-blue-600" /> Authorized Public Drop-Off Centers
           </h2>
           <div className="relative w-full sm:w-auto">
-            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
             <input
               value={pointQuery}
               onChange={(e) => setPointQuery(e.target.value)}
@@ -573,7 +573,7 @@ export default function AwarenessPage() {
                 )}
 
                 <div className="flex items-center justify-between pt-1">
-                  <span className="text-xs text-slate-400">{pt.code && `Code ${pt.code}`}</span>
+                  <span className="text-xs text-slate-500">{pt.code && `Code ${pt.code}`}</span>
                   {hasCoords ? (
                     <a
                       href={`https://www.google.com/maps?q=${pt.latitude},${pt.longitude}`}
@@ -583,7 +583,7 @@ export default function AwarenessPage() {
                       <Navigation className="w-3.5 h-3.5" /> Directions
                     </a>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500">
                       <MapPin className="w-3.5 h-3.5" /> On-map
                     </span>
                   )}

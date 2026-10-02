@@ -67,7 +67,7 @@ export function NotFound() {
   return (
     <div className="mx-auto max-w-md px-4 py-16 text-center">
       <div className="card space-y-4 p-8">
-        <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-paper-2 to-white text-slate-400 ring-1 ring-black/[0.06]">
+        <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-paper-2 to-white text-slate-500 ring-1 ring-black/[0.06]">
           <SearchX className="h-6 w-6" strokeWidth={1.75} />
         </div>
         <span className="eyebrow">404</span>

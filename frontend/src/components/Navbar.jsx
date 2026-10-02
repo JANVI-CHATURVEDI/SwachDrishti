@@ -266,7 +266,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
                     >
                       <div className="flex items-center justify-between px-2 py-1.5">
                         <span className="eyebrow">Notifications</span>
-                        <button onClick={markAllRead} className="text-xs font-bold text-leaf-600 hover:text-leaf-700 hover:underline">
+                        <button onClick={markAllRead} className="text-xs font-bold text-leaf-700 hover:text-leaf-800 hover:underline">
                           Mark all read
                         </button>
                       </div>
@@ -413,7 +413,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
                           </span>
                           <span className="min-w-0">
                             <span className="block text-sm font-bold">
-                              {r.label} {isCurrent && <span className="text-leaf-600">✓</span>}
+                              {r.label} {isCurrent && <span className="text-leaf-700">✓</span>}
                             </span>
                             <span className="block text-xs text-slate-500">{r.desc}</span>
                           </span>

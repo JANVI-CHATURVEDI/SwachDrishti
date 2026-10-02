@@ -107,7 +107,7 @@ export default function PriorityBadge({ level = 'MEDIUM', score, factors = [], s
             <div className="mb-2.5 flex items-center gap-1.5 border-b border-black/[0.06] pb-2 text-xs font-bold text-ink-900">
               <Sparkles className="h-3.5 w-3.5 text-leaf-600" />
               Why this priority?
-              <HelpCircle className="ml-auto h-3.5 w-3.5 text-slate-400" />
+              <HelpCircle className="ml-auto h-3.5 w-3.5 text-slate-500" />
             </div>
 
             <div className="space-y-2">

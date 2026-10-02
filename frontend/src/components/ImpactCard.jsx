@@ -112,7 +112,7 @@ export default function ImpactCard({ user, stats, catalog, headline, subline }) 
               className={`group relative overflow-hidden rounded-2xl border p-3 text-center transition-all duration-300 ease-out-expo
                 ${b.earned
                   ? `medal-shine border-transparent bg-gradient-to-br ${meta.from} ${meta.to} text-white shadow-soft hover:-translate-y-1 hover:shadow-lift`
-                  : 'border-black/[0.06] bg-paper-2/60 text-slate-400 hover:bg-paper-2'
+                  : 'border-black/[0.06] bg-paper-2/60 text-slate-500 hover:bg-paper-2'
                 }`}
             >
               <span
@@ -127,7 +127,7 @@ export default function ImpactCard({ user, stats, catalog, headline, subline }) 
                 {b.name}
               </div>
               <div
-                className={`mono mt-1 text-xs ${b.earned ? 'text-white/85' : 'text-slate-400'}`}
+                className={`mono mt-1 text-xs ${b.earned ? 'text-white/85' : 'text-slate-500'}`}
               >
                 {b.earned ? 'Earned' : `${stats?.[b.metric] || 0}/${b.threshold}`}
               </div>

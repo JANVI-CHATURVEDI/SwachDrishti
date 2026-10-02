@@ -172,7 +172,7 @@ export function Stat({ label, value, trend, icon: Icon = null, tone = 'neutral',
   const trendDir = typeof trend === 'number' ? (trend > 0 ? 'up' : trend < 0 ? 'down' : 'flat') : null;
   const TrendIcon = trendDir === 'up' ? TrendingUp : trendDir === 'down' ? TrendingDown : Minus;
   const trendTone =
-    trendDir === 'up' ? 'text-leaf-600 bg-leaf-50' : trendDir === 'down' ? 'text-rose-600 bg-rose-50' : 'text-slate-500 bg-paper-2';
+    trendDir === 'up' ? 'text-leaf-700 bg-leaf-50' : trendDir === 'down' ? 'text-rose-600 bg-rose-50' : 'text-slate-500 bg-paper-2';
   return (
     <div className={`flex items-start justify-between gap-3 ${className}`}>
       <div className="min-w-0">
@@ -185,7 +185,7 @@ export function Stat({ label, value, trend, icon: Icon = null, tone = 'neutral',
           {typeof trend === 'number' ? `${trend > 0 ? '+' : ''}${trend}` : trend}
         </span>
       )}
-      {Icon && <Icon className="hidden h-5 w-5 shrink-0 text-slate-300 sm:block" strokeWidth={1.75} />}
+      {Icon && <Icon className="hidden h-5 w-5 shrink-0 text-slate-500 sm:block" strokeWidth={1.75} />}
     </div>
   );
 }
