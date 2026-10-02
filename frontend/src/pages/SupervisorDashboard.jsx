@@ -6,6 +6,8 @@ import PriorityBadge from '../components/PriorityBadge';
 import StaffCreator from '../components/StaffCreator';
 import Modal from '../components/Modal';
 import { Users, AlertCircle, CheckCircle, Flame, UserCheck, ArrowRight, RefreshCw, Radio, Sparkles, ShieldCheck } from 'lucide-react';
+import { Reveal } from '../components/motion';
+import { motion } from 'framer-motion';
 
 export default function SupervisorDashboard() {
   const [teamSummary, setTeamSummary] = useState(null);
@@ -87,27 +89,35 @@ export default function SupervisorDashboard() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
-      <div className="bg-gradient-to-r from-blue-700 to-indigo-800 rounded-2xl p-6 sm:p-8 text-white shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div>
-          <span className="text-xs font-semibold tracking-wider uppercase bg-white/20 px-3 py-1 rounded-full">
-            Ward & Operations Supervisor
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold mt-2 tracking-tight">Fleet & Dispatch Control</h1>
-          <p className="text-blue-100 mt-1 max-w-xl text-sm">
-            Monitor real-time crew capacity, identify critical unassigned waste heaps, and balance ward tasks.
-          </p>
-        </div>
-        <div className="flex gap-4">
-          <div className="bg-white/10 px-4 py-3 rounded-xl border border-white/20 text-center">
-            <div className="text-2xl font-black">{teamSummary?.total_workers || workers.length || 6}</div>
-            <div className="text-[11px] text-blue-200">Active Field Workers</div>
+      <Reveal>
+        <div className="relative flex flex-col justify-between gap-6 overflow-hidden rounded-3xl border border-black/[0.06] bg-white p-6 shadow-soft sm:p-8 md:flex-row md:items-end">
+          <div
+            className="pointer-events-none absolute -right-14 -top-24 h-56 w-56 rounded-full bg-gradient-to-br from-indigo-400/30 to-sky-400/25 blur-2xl"
+            aria-hidden="true"
+          />
+          <div className="relative">
+            <span className="eyebrow">Ward &amp; Operations Supervisor</span>
+            <h1 className="h-section mt-2 text-ink-950">Fleet &amp; Dispatch Control</h1>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-500">
+              Monitor real-time crew capacity, identify critical unassigned waste heaps, and balance ward tasks.
+            </p>
           </div>
-          <div className="bg-white/10 px-4 py-3 rounded-xl border border-white/20 text-center">
-            <div className="text-2xl font-black">{teamSummary?.in_progress_tasks || 8}</div>
-            <div className="text-[11px] text-blue-200">Live Cleans in Progress</div>
+          <div className="relative flex shrink-0 gap-3">
+            <div className="rounded-2xl border border-black/[0.06] bg-paper-2/70 px-5 py-3 text-center">
+              <div className="stat-number text-3xl font-semibold leading-none text-ink-900">
+                {teamSummary?.total_workers || workers.length || 6}
+              </div>
+              <div className="mt-1.5 text-xs font-semibold uppercase tracking-[0.1em] text-slate-500">Active Field Workers</div>
+            </div>
+            <div className="rounded-2xl border border-black/[0.06] bg-gradient-to-br from-lime-400/40 to-leaf-500/25 px-5 py-3 text-center">
+              <div className="stat-number text-3xl font-semibold leading-none text-ink-950">
+                {teamSummary?.in_progress_tasks || 8}
+              </div>
+              <div className="mt-1.5 text-xs font-semibold uppercase tracking-[0.1em] text-ink-800/70">Live Cleans in Progress</div>
+            </div>
           </div>
         </div>
-      </div>
+      </Reveal>
 
       <div className="space-y-2">
         <div className="flex justify-between items-center text-xs text-slate-500">
@@ -123,82 +133,78 @@ export default function SupervisorDashboard() {
         />
       </div>
 
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3 bg-white p-3 rounded-xl border border-slate-200">
-        <div className="flex gap-2 text-xs font-bold">
-          <button
-            onClick={() => setActiveTab('dispatch')}
-            className={`px-3 py-1.5 rounded-lg transition ${
-              activeTab === 'dispatch'
-                ? 'bg-blue-600 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            Pending Dispatch Queue ({reports.filter(r => r.status === 'REPORTED' || r.status === 'VERIFIED').length})
-          </button>
-          <button
-            onClick={() => setActiveTab('pickups')}
-            className={`px-3 py-1.5 rounded-lg transition ${
-              activeTab === 'pickups'
-                ? 'bg-blue-600 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            Pickup Requests ({pickups.filter(p => p.status === 'REQUESTED' || p.status === 'SCHEDULED').length})
-          </button>
-          <button
-            onClick={() => setActiveTab('verifications')}
-            className={`px-3 py-1.5 rounded-lg transition flex items-center gap-1.5 ${
-              activeTab === 'verifications'
-                ? 'bg-emerald-600 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            AI Cleanup Verifications ({completedReports.length})
-          </button>
+      <div className="flex flex-col gap-3 rounded-2xl border border-black/[0.06] bg-white p-3 shadow-soft sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap gap-1 rounded-xl bg-paper-2/70 p-1">
+          {[
+            { key: 'dispatch', label: `Pending Dispatch Queue (${reports.filter(r => r.status === 'REPORTED' || r.status === 'VERIFIED').length})` },
+            { key: 'pickups', label: `Pickup Requests (${pickups.filter(p => p.status === 'REQUESTED' || p.status === 'SCHEDULED').length})` },
+            { key: 'verifications', label: `AI Cleanup Verifications (${completedReports.length})`, icon: Sparkles },
+          ].map(t => {
+            const active = activeTab === t.key;
+            return (
+              <button
+                key={t.key}
+                onClick={() => setActiveTab(t.key)}
+                aria-pressed={active}
+                className={`relative flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-bold transition-colors duration-200 ${active ? 'text-ink-950' : 'text-slate-500 hover:text-ink-800'}`}
+              >
+                {active && (
+                  <motion.span
+                    layoutId="sup-tab"
+                    className={`absolute inset-0 rounded-lg shadow-soft ${t.key === 'verifications' ? 'bg-gradient-to-br from-lime-400 to-leaf-400' : 'bg-gradient-to-br from-sky-500 to-blue-600'}`}
+                    transition={{ type: 'spring', stiffness: 420, damping: 36 }}
+                  />
+                )}
+                <span className={`relative flex items-center gap-1.5 ${active && t.key !== 'verifications' ? 'text-white' : ''}`}>
+                  {t.icon && <t.icon className="h-3.5 w-3.5" strokeWidth={2} />}
+                  {t.label}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
         <div className="flex items-center gap-3">
           <button
             onClick={() => setLiveUpdates(!liveUpdates)}
-            className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold flex items-center gap-1 transition ${
-              liveUpdates ? 'text-emerald-700 bg-emerald-50 border border-emerald-200' : 'text-slate-500 bg-slate-50'
+            className={`chip font-semibold transition-all ${
+              liveUpdates ? 'border-leaf-300 bg-leaf-50 text-leaf-700' : 'border-black/[0.06] bg-paper-2 text-slate-500'
             }`}
           >
-            <Radio className={`w-3 h-3 ${liveUpdates ? 'animate-pulse text-emerald-600' : ''}`} />
+            <Radio className={`h-3 w-3 ${liveUpdates ? 'animate-pulse text-leaf-600' : ''}`} />
             {liveUpdates ? 'Live Sync On' : 'Live Sync Off'}
           </button>
 
-          <button onClick={() => fetchSupervisorData(true)} className="text-xs text-slate-500 hover:text-slate-800 flex items-center gap-1 font-medium">
-            <RefreshCw className="w-3.5 h-3.5" /> Refresh
+          <button onClick={() => fetchSupervisorData(true)} className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-semibold text-slate-500 transition hover:bg-paper-2 hover:text-ink-900">
+            <RefreshCw className="h-3.5 w-3.5" /> Refresh
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {activeTab === 'dispatch' ? (
-          <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+          <div className="card overflow-hidden lg:col-span-2">
+            <div className="flex items-center justify-between border-b border-black/[0.05] bg-paper-2/50 px-6 py-4">
               <h3 className="font-bold text-slate-900 text-base">Unassigned & Priority Reports</h3>
             </div>
 
             <div className="divide-y divide-slate-100">
               {reports.filter(r => r.status === 'REPORTED' || r.status === 'VERIFIED').map((report) => (
-                <div key={report.id} className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-slate-50">
+                <div key={report.id} className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition hover:bg-paper-2/70">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-slate-900 text-sm">{report.title}</span>
                       <StatusBadge status={report.status} />
                     </div>
                     <div className="text-xs text-slate-600 line-clamp-1">{report.address}</div>
-                    <div className="text-[11px] text-slate-400">Severity: {report.severity} • {new Date(report.created_at).toLocaleDateString()}</div>
+                    <div className="text-xs text-slate-400">Severity: {report.severity} • {new Date(report.created_at).toLocaleDateString()}</div>
                   </div>
 
                   <div className="flex items-center gap-3">
                     <PriorityBadge level={report.priority_level} score={report.priority_score} factors={report.priority_factors} />
                     <button
                       onClick={() => setAssignTarget({ ...report, kind: 'report' })}
-                      className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm"
+                      className="btn-primary btn-sm"
                     >
                       <span>Dispatch</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -207,33 +213,33 @@ export default function SupervisorDashboard() {
                 </div>
               ))}
               {reports.filter(r => r.status === 'REPORTED' || r.status === 'VERIFIED').length === 0 && !loading && (
-                <div className="p-8 text-center text-sm text-slate-400">All pending reports currently dispatched!</div>
+                <div className="p-8 text-center text-sm text-slate-500">All pending reports currently dispatched!</div>
               )}
             </div>
           </div>
         ) : activeTab === 'pickups' ? (
-          <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+          <div className="card overflow-hidden lg:col-span-2">
+            <div className="flex items-center justify-between border-b border-black/[0.05] bg-paper-2/50 px-6 py-4">
               <h3 className="font-bold text-slate-900 text-base">Unassigned Pickup Requests</h3>
             </div>
 
             <div className="divide-y divide-slate-100">
               {pickups.filter(p => p.status === 'REQUESTED' || p.status === 'SCHEDULED').map((pickup) => (
-                <div key={pickup.id} className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-slate-50">
+                <div key={pickup.id} className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition hover:bg-paper-2/70">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-slate-900 text-sm">#{pickup.id} · {(pickup.waste_type || 'BULK').replace(/_/g, ' ')}</span>
                       <StatusBadge status={pickup.status} />
                     </div>
                     <div className="text-xs text-slate-600 line-clamp-1">{pickup.address}</div>
-                    <div className="text-[11px] text-slate-400">
+                    <div className="text-xs text-slate-400">
                       {pickup.estimated_volume || pickup.volume || 'Standard load'} · {pickup.preferred_slot || pickup.preferred_time || 'Any slot'} · {pickup.created_at ? new Date(pickup.created_at).toLocaleDateString() : ''}
                     </div>
                   </div>
 
                   <button
                     onClick={() => setAssignTarget({ ...pickup, kind: 'pickup', title: `${(pickup.waste_type || 'BULK').replace(/_/g, ' ')} pickup #${pickup.id}` })}
-                    className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-sm"
+                    className="btn-primary btn-sm"
                   >
                     <span>Dispatch</span>
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -241,26 +247,26 @@ export default function SupervisorDashboard() {
                 </div>
               ))}
               {pickups.filter(p => p.status === 'REQUESTED' || p.status === 'SCHEDULED').length === 0 && !loading && (
-                <div className="p-8 text-center text-sm text-slate-400">No pending pickup requests — all assigned!</div>
+                <div className="p-8 text-center text-sm text-slate-500">No pending pickup requests — all assigned!</div>
               )}
             </div>
           </div>
         ) : (
-          <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
-            <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+          <div className="card overflow-hidden lg:col-span-2">
+            <div className="flex items-center justify-between border-b border-black/[0.05] bg-paper-2/50 px-6 py-4">
               <div>
                 <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
                   <Sparkles className="w-4 h-4 text-emerald-600" />
                   Field Resolutions & AI Verification Evidence
                 </h3>
-                <p className="text-[11px] text-slate-500">Gemini vision comparison of before & after cleanup photographs</p>
+                <p className="text-xs text-slate-500">Gemini vision comparison of before & after cleanup photographs</p>
               </div>
             </div>
 
             <div className="divide-y divide-slate-100">
               {completedReports
                 .map((report) => (
-                  <div key={report.id} className="p-5 space-y-3 hover:bg-slate-50">
+                  <div key={report.id} className="p-5 space-y-3 transition hover:bg-paper-2/70">
                     <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                       <div>
                         <div className="font-bold text-slate-900 text-sm">#{report.id} · {report.title}</div>
@@ -287,7 +293,7 @@ export default function SupervisorDashboard() {
 
                     <div className="grid grid-cols-2 gap-3 pt-1">
                       <div className="space-y-1">
-                        <span className="text-[10px] font-bold uppercase text-slate-500">Before (Citizen Report)</span>
+                        <span className="text-xs font-bold uppercase text-slate-500">Before (Citizen Report)</span>
                         {(report.image_url || report.image) ? (
                           <img src={report.image_url || report.image} alt="Before" className="h-32 w-full object-cover rounded-lg border border-slate-200" />
                         ) : (
@@ -295,7 +301,7 @@ export default function SupervisorDashboard() {
                         )}
                       </div>
                       <div className="space-y-1">
-                        <span className="text-[10px] font-bold uppercase text-slate-500">After (Worker Resolution)</span>
+                        <span className="text-xs font-bold uppercase text-slate-500">After (Worker Resolution)</span>
                         {(report.after_image_url || report.after_image) ? (
                           <img src={report.after_image_url || report.after_image} alt="After" className="h-32 w-full object-cover rounded-lg border border-emerald-300" />
                         ) : (
@@ -306,20 +312,20 @@ export default function SupervisorDashboard() {
                   </div>
                 ))}
               {completedReports.length === 0 && (
-                <div className="p-8 text-center text-sm text-slate-400">No completed tasks submitted with verification evidence yet.</div>
+                <div className="p-8 text-center text-sm text-slate-500">No completed tasks submitted with verification evidence yet.</div>
               )}
             </div>
           </div>
         )}
 
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-          <h3 className="font-bold text-slate-900 text-base border-b border-slate-100 pb-3">Crew Workload Roster</h3>
+        <div className="card space-y-4 p-6">
+          <h3 className="h-card border-b border-black/[0.05] pb-3 text-base text-ink-900">Crew Workload Roster</h3>
           <div className="space-y-3">
             {(teamSummary?.workers_status || workers).map((worker, idx) => (
-              <div key={worker.id || idx} className="p-3 bg-slate-50 rounded-xl flex items-center justify-between">
+              <div key={worker.id || idx} className="flex items-center justify-between rounded-xl bg-paper-2/70 p-3 ring-1 ring-black/[0.04]">
                 <div>
                   <div className="font-bold text-slate-900 text-xs">{worker.username || worker.name || `Worker ${idx + 1}`}</div>
-                  <div className="text-[10px] text-slate-500">{worker.ward || 'Central Ward'}</div>
+                  <div className="text-xs text-slate-500">{worker.ward || 'Central Ward'}</div>
                 </div>
                 <div className="text-right">
                   <span className="text-xs font-bold text-blue-700 bg-blue-100/70 px-2 py-0.5 rounded-full">
@@ -330,7 +336,7 @@ export default function SupervisorDashboard() {
             ))}
           </div>
           <details className="rounded-xl border border-dashed border-slate-300 overflow-hidden">
-            <summary className="cursor-pointer px-4 py-2.5 text-xs font-bold text-emerald-700 hover:bg-emerald-50 transition list-none flex items-center justify-between">
+            <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-2.5 text-xs font-bold text-leaf-700 transition hover:bg-leaf-50">
               <span>+ Onboard a field worker</span>
               <span className="text-slate-400">opens form</span>
             </summary>
@@ -343,7 +349,7 @@ export default function SupervisorDashboard() {
 
       {assignTarget && (
         <Modal onClose={() => setAssignTarget(null)}>
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 space-y-4 modal-pop my-auto shrink-0 max-h-[90vh] overflow-y-auto">
+          <div className="modal-pop my-auto max-h-[90vh] w-full max-w-md shrink-0 overflow-y-auto rounded-3xl bg-white p-6 shadow-lift space-y-4">
             <h3 className="text-lg font-bold text-slate-900">Dispatch Task to Field Worker</h3>
             <div className="p-3 bg-slate-50 rounded-lg text-xs space-y-1">
               <strong>{assignTarget.kind === 'pickup' ? `Pickup #${assignTarget.id} · ${(assignTarget.waste_type || 'BULK').replace(/_/g, ' ')}` : assignTarget.title}</strong>
@@ -362,7 +368,7 @@ export default function SupervisorDashboard() {
                   required
                   value={selectedWorkerId}
                   onChange={(e) => setSelectedWorkerId(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                  className="input"
                 >
                   <option value="">-- Choose Operative --</option>
                   {workers.map((w) => (
@@ -376,14 +382,14 @@ export default function SupervisorDashboard() {
                 <button
                   type="button"
                   onClick={() => setAssignTarget(null)}
-                  className="px-4 py-2 border rounded-lg text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                  className="btn-outline btn-sm"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={assigning}
-                  className="px-5 py-2 bg-blue-600 text-white rounded-lg text-xs font-bold hover:bg-blue-700 transition"
+                  className="btn-primary btn-sm"
                 >
                   {assigning ? 'Dispatching...' : 'Confirm Dispatch'}
                 </button>

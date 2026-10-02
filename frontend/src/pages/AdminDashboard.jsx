@@ -5,6 +5,7 @@ import StatusBadge from '../components/StatusBadge';
 import PriorityBadge from '../components/PriorityBadge';
 import StaffCreator from '../components/StaffCreator';
 import { BarChart3, TrendingUp, Sparkles, AlertOctagon, CheckCircle2, ShieldAlert, Search, RefreshCw, Users } from 'lucide-react';
+import { Reveal } from '../components/motion';
 
 export default function AdminDashboard() {
   const [overview, setOverview] = useState(null);
@@ -100,34 +101,36 @@ export default function AdminDashboard() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 space-y-8">
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-6 sm:p-8 text-white shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6 border border-slate-800">
-        <div>
-          <span className="text-xs font-semibold tracking-wider uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1 rounded-full">
-            Municipal Command Center
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold mt-2 tracking-tight">City Waste Intelligence & Policy</h1>
-          <p className="text-slate-300 mt-1 max-w-xl text-sm">
-            Holistic urban sanitation telemetry, AI predictive hotspot mitigation, and ward cleanliness scoring.
-          </p>
-        </div>
+      <Reveal>
+        <div className="relative flex flex-col justify-between gap-6 overflow-hidden rounded-3xl border border-black/[0.06] bg-white p-6 shadow-soft sm:p-8 md:flex-row md:items-end">
+          <div
+            className="pointer-events-none absolute -right-16 -top-24 h-60 w-60 rounded-full bg-gradient-to-br from-lime-400/35 to-leaf-500/25 blur-2xl"
+            aria-hidden="true"
+          />
+          <div className="relative">
+            <span className="eyebrow">Municipal Command Center</span>
+            <h1 className="h-section mt-2 text-ink-950">City Waste Intelligence &amp; Policy</h1>
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-slate-500">
+              Holistic urban sanitation telemetry, AI predictive hotspot mitigation, and ward cleanliness scoring.
+            </p>
+          </div>
 
-        <div className="grid grid-cols-1 min-[480px]:grid-cols-3 gap-3">
-          <div className="bg-white/5 border border-white/10 p-3 rounded-xl text-center">
-            <div className="text-xl font-bold text-emerald-400">{overview?.resolved_reports_count ?? 142}</div>
-            <div className="text-[10px] text-slate-400 uppercase font-semibold">Resolved Heaps</div>
-          </div>
-          <div className="bg-white/5 border border-white/10 p-3 rounded-xl text-center">
-            <div className="text-xl font-bold text-rose-400">{hotspots.length ?? 8}</div>
-            <div className="text-[10px] text-slate-400 uppercase font-semibold">Recurrent Spots</div>
-          </div>
-          <div className="bg-white/5 border border-white/10 p-3 rounded-xl text-center">
-            <div className="text-xl font-bold text-blue-400">{overview?.average_resolution_hours ? `${overview.average_resolution_hours}h` : '4.2h'}</div>
-            <div className="text-[10px] text-slate-400 uppercase font-semibold">Avg Turnaround</div>
+          <div className="relative grid shrink-0 grid-cols-1 gap-3 rounded-2xl bg-ink-950 p-3 sm:grid-cols-3">
+            {[
+              { value: overview?.resolved_reports_count ?? 142, label: 'Resolved Heaps', tone: 'text-lime-300' },
+              { value: hotspots.length ?? 8, label: 'Recurrent Spots', tone: 'text-rose-400' },
+              { value: overview?.average_resolution_hours ? `${overview.average_resolution_hours}h` : '4.2h', label: 'Avg Turnaround', tone: 'text-cyan-300' },
+            ].map((s) => (
+              <div key={s.label} className="rounded-xl border border-white/10 bg-white/[0.05] px-4 py-3 text-center">
+                <div className={`stat-number text-xl font-semibold ${s.tone}`}>{s.value}</div>
+                <div className="mt-1 text-xs font-semibold uppercase tracking-[0.08em] text-slate-400">{s.label}</div>
+              </div>
+            ))}
           </div>
         </div>
-      </div>
+      </Reveal>
 
-      <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+      <div className="card p-4">
         <form onSubmit={handleNlSearch} className="flex gap-3">
           <div className="relative flex-1">
             <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
@@ -136,13 +139,13 @@ export default function AdminDashboard() {
               placeholder="Ask anything in plain English: 'Show critical road blockage reports near Central Delhi unresolved for 6 hours'..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border rounded-xl text-xs sm:text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              className="input pl-10"
             />
           </div>
           <button
             type="submit"
             disabled={searching}
-            className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 transition shadow-sm"
+            className="btn-primary"
           >
             <Sparkles className="w-3.5 h-3.5" />
             {searching ? 'Querying...' : 'Semantic Query'}
@@ -153,7 +156,7 @@ export default function AdminDashboard() {
           <div className="mt-4 p-4 bg-indigo-50/60 rounded-xl border border-indigo-100">
             <div className="flex justify-between items-center mb-2">
               <span className="text-xs font-bold text-indigo-900">Found {searchResults.length} matching incidents</span>
-              <button onClick={() => setSearchResults(null)} className="text-[11px] text-indigo-600 font-semibold hover:underline">Clear</button>
+              <button onClick={() => setSearchResults(null)} className="text-xs text-indigo-600 font-semibold hover:underline">Clear</button>
             </div>
             <div className="space-y-2">
               {searchResults.slice(0, 4).map(item => (
@@ -161,7 +164,7 @@ export default function AdminDashboard() {
                   <span className="font-semibold text-slate-800">{item.title}</span>
                   <div className="flex items-center gap-2">
                     <StatusBadge status={item.status} />
-                    <span className="text-slate-400 text-[10px]">{item.address}</span>
+                    <span className="text-slate-400 text-xs">{item.address}</span>
                   </div>
                 </div>
               ))}
@@ -171,15 +174,15 @@ export default function AdminDashboard() {
       </div>
 
       {aiInsights && (
-        <div className="bg-gradient-to-r from-emerald-50 via-teal-50 to-blue-50 border border-emerald-200/80 rounded-2xl p-6 shadow-sm">
+        <div className="rounded-3xl border border-leaf-200 bg-gradient-to-br from-leaf-50 via-white to-lime-50/60 p-6 shadow-soft">
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             <Sparkles className="w-5 h-5 text-emerald-700" />
-            <h3 className="font-bold text-slate-900 text-base">Municipal AI Intelligence & Operational Advice</h3>
-            <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-white border border-emerald-200 text-emerald-700">
+            <h3 className="h-card text-base text-ink-900">Municipal AI Intelligence & Operational Advice</h3>
+            <span className="text-xs font-bold uppercase px-2 py-0.5 rounded-full bg-white border border-emerald-200 text-emerald-700">
               {aiInsights.source === 'gemini' ? 'Gemini' : 'Heuristic fallback'}
             </span>
             {aiInsights.cached && (
-              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-500">
+              <span className="text-xs font-bold uppercase px-2 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-500">
                 cached 15m
               </span>
             )}
@@ -198,7 +201,7 @@ export default function AdminDashboard() {
               ].map((s) => (
                 <div key={s.label} className="p-2 bg-white/80 rounded-xl border border-emerald-100">
                   <div className="text-sm font-black text-slate-900">{s.value}</div>
-                  <div className="text-[10px] text-slate-500 uppercase font-semibold">{s.label}</div>
+                  <div className="text-xs text-slate-500 uppercase font-semibold">{s.label}</div>
                 </div>
               ))}
             </div>
@@ -213,13 +216,13 @@ export default function AdminDashboard() {
               <div key={i} className={`p-3 bg-white/80 rounded-xl border ${
                 a.priority === 'HIGH' ? 'border-rose-200' : a.priority === 'MEDIUM' ? 'border-teal-200' : 'border-blue-200'
               }`}>
-                <span className={`text-[10px] font-bold uppercase ${
+                <span className={`text-xs font-bold uppercase ${
                   a.priority === 'HIGH' ? 'text-rose-600' : a.priority === 'MEDIUM' ? 'text-teal-600' : 'text-blue-600'
                 }`}>
                   Action {i + 1}{a.priority ? ` · ${a.priority}` : ''}
                 </span>
                 <div className="font-semibold text-slate-900 mt-0.5">{a.title}</div>
-                <div className="text-[11px] text-slate-500">{a.detail}</div>
+                <div className="text-xs text-slate-500">{a.detail}</div>
               </div>
             ))}
           </div>
@@ -239,10 +242,10 @@ export default function AdminDashboard() {
         />
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+      <div className="card p-6">
         <div className="flex items-center justify-between flex-wrap gap-2 mb-4">
-          <h3 className="font-bold text-slate-900 text-base">Pickup Operations</h3>
-          <div className="flex gap-2 text-[11px] font-bold">
+          <h3 className="h-card text-base text-ink-900">Pickup Operations</h3>
+          <div className="flex gap-2 text-xs font-bold">
             {['REQUESTED', 'ASSIGNED', 'IN_PROGRESS', 'COLLECTED'].map((s) => {
               const n = pickups.filter((p) => p.status === s).length;
               return (
@@ -255,13 +258,13 @@ export default function AdminDashboard() {
         </div>
         <div className="space-y-2 max-h-96 overflow-y-auto pr-1">
           {pickups.map((p) => (
-            <div key={p.id} className="p-3 bg-slate-50 border border-slate-100 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div key={p.id} className="flex flex-col gap-2 rounded-xl border border-black/[0.04] bg-paper-2/70 p-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <div className="font-bold text-slate-900 text-xs">
                   #{p.id} · {(p.waste_type || 'BULK').replace(/_/g, ' ')}
                 </div>
-                <div className="text-[11px] text-slate-500 truncate">{p.address}</div>
-                <div className="text-[10px] text-slate-400">
+                <div className="text-xs text-slate-500 truncate">{p.address}</div>
+                <div className="text-xs text-slate-400">
                   {p.estimated_volume || p.volume || 'Standard load'} · {p.latitude?.toFixed ? `${Number(p.latitude).toFixed(4)}, ${Number(p.longitude).toFixed(4)}` : ''}
                 </div>
               </div>
@@ -272,7 +275,7 @@ export default function AdminDashboard() {
                     <select
                       value={pickupWorker[p.id] || ''}
                       onChange={(e) => setPickupWorker((prev) => ({ ...prev, [p.id]: e.target.value }))}
-                      className="px-2 py-1.5 border rounded-lg text-[11px] focus:ring-2 focus:ring-indigo-500 focus:outline-none bg-white"
+                      className="input min-h-9 px-2.5 py-1.5 text-xs"
                     >
                       <option value="">Worker…</option>
                       {staff.map((w) => (
@@ -282,7 +285,7 @@ export default function AdminDashboard() {
                     <button
                       onClick={() => handlePickupAssign(p.id)}
                       disabled={assigningPickup === p.id}
-                      className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[11px] font-bold transition disabled:opacity-50"
+                      className="btn-dark btn-sm"
                     >
                       {assigningPickup === p.id ? '…' : 'Assign'}
                     </button>
@@ -292,37 +295,37 @@ export default function AdminDashboard() {
             </div>
           ))}
           {pickups.length === 0 && (
-            <div className="text-center py-4 text-xs text-slate-400">No pickup requests yet.</div>
+            <div className="py-4 text-center text-xs text-slate-500">No pickup requests yet.</div>
           )}
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-        <h3 className="font-bold text-slate-900 text-base mb-4">Ward Cleanliness Index (Swachh Index)</h3>
+      <div className="card p-6">
+        <h3 className="h-card mb-4 text-base text-ink-900">Ward Cleanliness Index (Swachh Index)</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {cleanliness.map((c, i) => (
-            <div key={c.id || i} className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 space-y-2">
+            <div key={c.id || i} className="space-y-2 rounded-2xl border border-black/[0.04] bg-paper-2/60 p-4">
               <div className="flex justify-between items-start">
                 <span className="font-bold text-slate-900 text-sm">{c.ward_name || `Ward ${i + 1}`}</span>
-                <span className={`px-2 py-0.5 rounded text-[10px] font-black ${
+                <span className={`px-2 py-0.5 rounded text-xs font-black ${
                   (c.score || 80) >= 80 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
                 }`}>
                   {c.score || 82}/100
                 </span>
               </div>
-              <div className="text-[11px] text-slate-500">
+              <div className="text-xs text-slate-500">
                 Resolution Rate: <strong>{c.resolution_rate || '94%'}</strong>
               </div>
               <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
                 <div
-                  className="bg-emerald-600 h-full rounded-full"
+                  className="h-full rounded-full bg-gradient-to-r from-lime-400 to-leaf-500"
                   style={{ width: `${c.score || 82}%` }}
                 ></div>
               </div>
             </div>
           ))}
           {cleanliness.length === 0 && (
-            <div className="col-span-4 text-center py-4 text-xs text-slate-400">
+            <div className="col-span-4 py-4 text-center text-xs text-slate-500">
               Cleanliness scores updated dynamically based on incident density.
             </div>
           )}
@@ -330,17 +333,17 @@ export default function AdminDashboard() {
       </div>
 
       {forecast && forecast.forecasts?.length > 0 && (
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+        <div className="card p-6">
           <div className="flex items-center justify-between flex-wrap gap-2 mb-1">
-            <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+            <h3 className="h-card flex items-center gap-2 text-base text-ink-900">
               <AlertOctagon className="w-4 h-4 text-rose-600" />
               Predicted Overflow Risk — next {forecast.horizon_hours}h
             </h3>
-            <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 border border-rose-100">
+            <span className="text-xs font-bold uppercase px-2 py-0.5 rounded-full bg-rose-50 text-rose-600 border border-rose-100">
               {forecast.likely_count} likely to overflow
             </span>
           </div>
-          <p className="text-[11px] text-slate-500 mb-4">Method: {forecast.method}</p>
+          <p className="text-xs text-slate-500 mb-4">Method: {forecast.method}</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
             {forecast.forecasts.slice(0, 6).map((f, i) => (
               <div key={i} className={`p-3 rounded-xl border ${
@@ -348,15 +351,15 @@ export default function AdminDashboard() {
               }`}>
                 <div className="flex items-center justify-between mb-1">
                   <span className="font-bold text-slate-900">{f.zone || 'Unknown zone'}</span>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-black ${
+                  <span className={`px-2 py-0.5 rounded text-xs font-black ${
                     f.likely_to_overflow ? 'bg-rose-600 text-white' : 'bg-slate-300 text-slate-700'
                   }`}>{f.risk_score}</span>
                 </div>
-                <div className="text-[11px] text-slate-600 mb-1">
+                <div className="text-xs text-slate-600 mb-1">
                   {f.open_reports} open · {f.critical_reports} critical · oldest {f.oldest_age_hours}h
                 </div>
-                <p className="text-[11px] text-slate-500 leading-relaxed">{f.explanation}</p>
-                <div className={`mt-1.5 text-[11px] font-semibold ${f.likely_to_overflow ? 'text-rose-700' : 'text-emerald-700'}`}>
+                <p className="text-xs text-slate-500 leading-relaxed">{f.explanation}</p>
+                <div className={`mt-1.5 text-xs font-semibold ${f.likely_to_overflow ? 'text-rose-700' : 'text-emerald-700'}`}>
                   {f.recommendation}
                 </div>
               </div>
@@ -364,17 +367,17 @@ export default function AdminDashboard() {
           </div>
         </div>
       )}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+      <div className="card p-6">
         <div className="flex items-center justify-between flex-wrap gap-2 mb-1">
-          <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+          <h3 className="h-card flex items-center gap-2 text-base text-ink-900">
             <Users className="w-4 h-4 text-emerald-600" />
             Staff Management
           </h3>
-          <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+          <span className="text-xs font-bold uppercase px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
             {staff.length} field accounts
           </span>
         </div>
-        <p className="text-[11px] text-slate-500 mb-4">
+        <p className="text-xs text-slate-500 mb-4">
           Issue worker and supervisor logins here. Public signup stays citizen-only. New crew
           appears instantly in the supervisor's Crew Workload Roster and can be dispatched.
         </p>
@@ -382,21 +385,21 @@ export default function AdminDashboard() {
           <StaffCreator onCreated={refreshStaff} allowSupervisorRole />
           <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
             {staff.map(w => (
-              <div key={w.id} className="p-3 bg-slate-50 border border-slate-100 rounded-xl flex items-center justify-between gap-2">
+              <div key={w.id} className="flex items-center justify-between gap-2 rounded-xl border border-black/[0.04] bg-paper-2/70 p-3">
                 <div className="min-w-0">
                   <div className="font-bold text-slate-900 text-xs truncate">
                     {[w.first_name, w.last_name].filter(Boolean).join(' ') || w.username}
                     <span className="font-semibold text-slate-400"> · @{w.username}</span>
                   </div>
-                  <div className="text-[10px] text-slate-500">{w.zone || 'Zone 1 - Central'}{w.phone ? ` · ${w.phone}` : ''}</div>
+                  <div className="text-xs text-slate-500">{w.zone || 'Zone 1 - Central'}{w.phone ? ` · ${w.phone}` : ''}</div>
                 </div>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 shrink-0">
+                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 shrink-0">
                   {w.role}
                 </span>
               </div>
             ))}
             {staff.length === 0 && (
-              <div className="p-6 text-center text-xs text-slate-400">No field accounts yet — create the first one.</div>
+              <div className="p-6 text-center text-xs text-slate-500">No field accounts yet — create the first one.</div>
             )}
           </div>
         </div>
