@@ -78,7 +78,9 @@ export default function Navbar({ activeTab, setActiveTab }) {
   useLockBody(mobileOpen);
 
   const isLanding = location.pathname === '/';
-  const dark = isLanding && !scrolled;
+  // Landing always uses light-on-dark chrome: fully transparent over the hero,
+  // then a frosted dark pill once the page scrolls.
+  const dark = isLanding;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 16);
@@ -177,9 +179,11 @@ export default function Navbar({ activeTab, setActiveTab }) {
 
   const visibleLinks = LINKS.filter(l => !l.roles || !user || role === 'ADMIN' || l.roles.includes(role));
 
-  const surface = dark
-    ? 'bg-white/[0.07] border-white/10 text-white shadow-dark-soft backdrop-blur-xl'
-    : 'glass-light text-ink-900 shadow-soft';
+  const surface = !dark
+    ? 'glass-light text-ink-900 shadow-soft'
+    : scrolled
+      ? 'bg-ink-950/75 border-white/15 text-white shadow-dark-soft backdrop-blur-xl'
+      : 'bg-transparent border-transparent text-white';
   const navIdle = dark
     ? 'text-white/70 hover:text-white'
     : 'text-ink-700 hover:text-ink-950';
@@ -188,7 +192,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
 
   return (
     <header className="sticky top-0 z-navbar">
-      <div className="mx-auto max-w-7xl px-3 sm:px-4">
+      <div className={`mx-auto max-w-7xl px-3 sm:px-4 ${isLanding ? 'pt-2' : ''}`}>
         <div className={`flex h-14 items-center gap-2 rounded-2xl border px-3 transition-all duration-300 ease-out-expo sm:gap-3 sm:px-4 ${surface}`}>
           {/* Logo */}
           <button
