@@ -4,10 +4,44 @@ import MapView from '../components/MapView';
 import StatusBadge from '../components/StatusBadge';
 import PriorityBadge from '../components/PriorityBadge';
 import StaffCreator from '../components/StaffCreator';
+import ReportDetailModal from '../components/ReportDetailModal';
+import { useAuth } from '../context/AuthContext';
 import { BarChart3, TrendingUp, Sparkles, AlertOctagon, CheckCircle2, ShieldAlert, Search, RefreshCw, Users } from 'lucide-react';
 import { Reveal } from '../components/motion';
 
+function StaffRow({ member: w, currentUserId, onToggle }) {
+  return (
+    <div className={`flex items-center justify-between gap-2 rounded-xl border border-black/[0.04] p-3 ${w.is_blacklisted ? 'bg-rose-50/60' : 'bg-paper-2/70'}`}>
+      <div className="min-w-0">
+        <div className="font-bold text-slate-900 text-xs truncate">
+          {[w.first_name, w.last_name].filter(Boolean).join(' ') || w.username}
+          <span className="font-semibold text-slate-500"> · @{w.username}</span>
+          {w.is_blacklisted && (
+            <span className="ml-1.5 rounded-full bg-rose-600 px-2 py-0.5 text-xs font-black text-white">BLACKLISTED</span>
+          )}
+        </div>
+        <div className="text-xs text-slate-500">{w.zone || 'Zone 1 - Central'}{w.phone ? ` · ${w.phone}` : ''}</div>
+      </div>
+      <div className="flex shrink-0 items-center gap-2">
+        <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+          {w.role}
+        </span>
+        {(w.role === 'WORKER' || w.role === 'SUPERVISOR') && w.id !== currentUserId && (
+          <button
+            onClick={() => onToggle(w)}
+            className={`rounded-lg px-2 py-1 text-xs font-bold transition ${w.is_blacklisted ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' : 'bg-rose-50 text-rose-700 hover:bg-rose-100'}`}
+          >
+            {w.is_blacklisted ? 'Unblock' : 'Blacklist'}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
+  const { user } = useAuth();
+  const [detailReport, setDetailReport] = useState(null);
   const [overview, setOverview] = useState(null);
   const [cleanliness, setCleanliness] = useState([]);
   const [reports, setReports] = useState([]);
@@ -23,6 +57,7 @@ export default function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState(null);
   const [searching, setSearching] = useState(false);
+  const [staffTab, setStaffTab] = useState('workers');
 
   const fetchAdminData = async () => {
     try {
@@ -83,6 +118,17 @@ export default function AdminDashboard() {
       const res = await api.get('/api/auth/workers/');
       setStaff(res.data || []);
     } catch {}
+  };
+
+  const toggleBlacklist = async (member) => {
+    const action = member.is_blacklisted ? 'unblock' : 'blacklist';
+    if (!member.is_blacklisted && !window.confirm(`Blacklist @${member.username}? They will be logged out and hidden from dispatch.`)) return;
+    try {
+      const res = await api.post(`/api/auth/staff/${member.id}/blacklist/`, { blacklisted: !member.is_blacklisted });
+      setStaff((prev) => prev.map((s) => (s.id === member.id ? res.data.user : s)));
+    } catch (err) {
+      alert(err.response?.data?.detail || err.message);
+    }
   };
 
   const handleNlSearch = async (e) => {
@@ -160,7 +206,7 @@ export default function AdminDashboard() {
             </div>
             <div className="space-y-2">
               {searchResults.slice(0, 4).map(item => (
-                <div key={item.id} className="p-2 bg-white rounded-lg border border-indigo-100 flex items-center justify-between text-xs">
+                <div key={item.id} onClick={() => setDetailReport(item)} title="Open issue details" className="p-2 bg-white rounded-lg border border-indigo-100 flex items-center justify-between text-xs cursor-pointer hover:bg-indigo-50/60">
                   <span className="font-semibold text-slate-800">{item.title}</span>
                   <div className="flex items-center gap-2">
                     <StatusBadge status={item.status} />
@@ -239,6 +285,7 @@ export default function AdminDashboard() {
           items={reports}
           hotspots={hotspots}
           pickups={pickups}
+          onItemClick={(item) => setDetailReport(item)}
         />
       </div>
 
@@ -278,7 +325,7 @@ export default function AdminDashboard() {
                       className="input min-h-9 px-2.5 py-1.5 text-xs"
                     >
                       <option value="">Worker…</option>
-                      {staff.map((w) => (
+                      {staff.filter((w) => !w.is_blacklisted && w.role === 'WORKER').map((w) => (
                         <option key={w.id} value={w.id}>{w.username}</option>
                       ))}
                     </select>
@@ -383,27 +430,50 @@ export default function AdminDashboard() {
         </p>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <StaffCreator onCreated={refreshStaff} allowSupervisorRole />
-          <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
-            {staff.map(w => (
-              <div key={w.id} className="flex items-center justify-between gap-2 rounded-xl border border-black/[0.04] bg-paper-2/70 p-3">
-                <div className="min-w-0">
-                  <div className="font-bold text-slate-900 text-xs truncate">
-                    {[w.first_name, w.last_name].filter(Boolean).join(' ') || w.username}
-                    <span className="font-semibold text-slate-500"> · @{w.username}</span>
-                  </div>
-                  <div className="text-xs text-slate-500">{w.zone || 'Zone 1 - Central'}{w.phone ? ` · ${w.phone}` : ''}</div>
+          <div>
+            <div className="mb-3 flex gap-1 rounded-xl bg-paper-2/70 p-1">
+              {[
+                { key: 'workers', label: `Field Workers (${staff.filter((s) => s.role === 'WORKER').length})` },
+                { key: 'supervisors', label: `Supervisors (${staff.filter((s) => s.role === 'SUPERVISOR').length})` },
+              ].map((t) => (
+                <button
+                  key={t.key}
+                  onClick={() => setStaffTab(t.key)}
+                  aria-pressed={staffTab === t.key}
+                  className={`flex-1 rounded-lg px-3 py-2 text-xs font-bold transition ${staffTab === t.key ? 'bg-ink-950 text-white shadow-soft' : 'text-slate-500 hover:text-ink-800'}`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+              {staff
+                .filter((s) => (staffTab === 'supervisors' ? s.role === 'SUPERVISOR' : s.role === 'WORKER'))
+                .map((w) => (
+                  <StaffRow key={w.id} member={w} currentUserId={user?.id} onToggle={toggleBlacklist} />
+                ))}
+              {staff.filter((s) => (staffTab === 'supervisors' ? s.role === 'SUPERVISOR' : s.role === 'WORKER')).length === 0 && (
+                <div className="rounded-xl border border-dashed border-slate-200 p-3 text-center text-xs text-slate-500">
+                  No {staffTab === 'supervisors' ? 'supervisors' : 'field workers'} yet.
                 </div>
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 shrink-0">
-                  {w.role}
-                </span>
-              </div>
-            ))}
-            {staff.length === 0 && (
-              <div className="p-6 text-center text-xs text-slate-500">No field accounts yet — create the first one.</div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
+      {detailReport && (
+        <ReportDetailModal
+          report={detailReport}
+          onClose={() => setDetailReport(null)}
+          role={user?.role || 'ADMIN'}
+          currentUser={user}
+          workers={staff}
+          onUpdated={(updated) => {
+            setReports((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
+            setDetailReport(updated);
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -157,6 +157,22 @@ Do not include markdown code block formatting, just the raw JSON.
     def has_gemini(cls) -> bool:
         return cls.get_gemini_client() is not None
 
+    @staticmethod
+    def fetch_image_bytes(url: str | None, timeout: int = 10) -> bytes | None:
+        if not url or not str(url).startswith(('http://', 'https://')):
+            return None
+        try:
+            import requests
+            resp = requests.get(url, timeout=timeout)
+            if resp.status_code != 200 or not resp.content:
+                return None
+            if len(resp.content) > 10 * 1024 * 1024:
+                return None
+            return resp.content
+        except Exception as e:
+            logger.info(f"Could not fetch image bytes from URL: {e}")
+            return None
+
     @classmethod
     def classify_from_image(
         cls, description: str = '', filename: str = '',
@@ -244,49 +260,82 @@ No markdown fences."""
             return '5+ bags'
         return '1-2 bags'
 
+    #: Preferred first, fallback second (separate free-tier quotas).
+    CLEANUP_MODELS = ('gemini-2.5-flash', 'gemini-3.8-flash')
+
     @classmethod
     def compare_cleanup(cls, before_bytes: bytes | None, after_bytes: bytes | None, notes: str = '') -> dict:
         if before_bytes and after_bytes and cls.has_gemini():
-            try:
-                from google.genai import types
-                client = cls.get_gemini_client()
-                prompt = """You are a municipal sanitation auditor comparing a BEFORE photo and an AFTER photo of the same location.
+            last_error = None
+            for model in cls.CLEANUP_MODELS:
+                try:
+                    from google.genai import types
+                    client = cls.get_gemini_client()
+                    prompt = """You are a municipal sanitation auditor comparing a BEFORE photo and an AFTER photo of the same location.
 
-Return ONLY raw JSON with:
+Return ONLY raw JSON with exactly these keys, in this order:
+- observation: 1-2 full sentences in plain words describing what you literally see in the BEFORE photo, then what you literally see in the AFTER photo (e.g. "Before shows a roadside pile of black garbage bags with plastic scattered on the pavement. After shows the same stretch swept clean with only one bag left near the curb."). Always write this, never an empty string.
+- reasons: 1-3 short strings explaining the score. Always at least one item, never empty.
 - cleanup_score: integer 0-100 (100 = perfectly clean, 0 = unchanged)
 - verified: boolean, true only when cleanup_score >= 70
 - verdict: short string, e.g. "Cleanup verified" or "Residue remains"
-- reasons: array of 1-3 short strings explaining the score
-No markdown fences."""
-                response = client.models.generate_content(
-                    model='gemini-2.5-flash',
-                    contents=[
-                        types.Part.from_bytes(data=before_bytes, mime_type='image/jpeg'),
-                        types.Part.from_bytes(data=after_bytes, mime_type='image/jpeg'),
-                        f"BEFORE image is first, AFTER image is second.\nWorker notes: {notes}",
-                    ],
-                )
-                data = cls._extract_json(response.text)
-                if data:
-                    score = max(0, min(100, int(data.get('cleanup_score', 0))))
-                    return {
-                        'cleanup_score': score,
-                        'verified': bool(data.get('verified', score >= 70)),
-                        'verdict': data.get('verdict') or ('Cleanup verified' if score >= 70 else 'Residue remains'),
-                        'reasons': data.get('reasons') or [],
-                        'source': 'gemini_vision',
-                    }
-            except Exception as e:
-                logger.info(f"Gemini cleanup-compare fallback triggered: {e}")
+No markdown fences. Every key must have a value."""
+                    response = client.models.generate_content(
+                        model=model,
+                        contents=[
+                            types.Part.from_bytes(data=before_bytes, mime_type='image/jpeg'),
+                            types.Part.from_bytes(data=after_bytes, mime_type='image/jpeg'),
+                            f"BEFORE image is first, AFTER image is second.\nWorker notes: {notes}",
+                        ],
+                        config=types.GenerateContentConfig(
+                            response_mime_type='application/json',
+                            temperature=0.4,
+                        ),
+                    )
+                    data = cls._extract_json(response.text)
+                    if not data:
+                        logger.info("Gemini cleanup-compare returned non-JSON: %s", (response.text or '')[:200])
+                    if data:
+                        score = max(0, min(100, int(data.get('cleanup_score', 0))))
+                        obs = (data.get('observation') or data.get('description') or '').strip()
+                        if not obs:
+                            b = (data.get('before') or '').strip()
+                            a = (data.get('after') or '').strip()
+                            obs = ' '.join(
+                                x for x in [
+                                    f"Before: {b}" if b else '',
+                                    f"After: {a}" if a else '',
+                                ] if x
+                            ).strip()
+                        return {
+                            'cleanup_score': score,
+                            'verified': bool(data.get('verified', score >= 70)),
+                            'verdict': data.get('verdict') or data.get('conclusion') or ('Cleanup verified' if score >= 70 else 'Residue remains'),
+                            'observation': obs[:500],
+                            'reasons': data.get('reasons') or [],
+                            'source': 'gemini_vision',
+                        }
+                except Exception as e:
+                    last_error = e
+                    logger.warning("Gemini cleanup-compare via %s failed: %s", model, e)
+            logger.warning("Gemini cleanup-compare falling back to heuristic: %s", last_error)
 
         score = 55 if after_bytes else 0
         if notes and len(notes) > 20:
             score += 20
+        reasons = []
+        if not cls.has_gemini():
+            reasons.append('Set GEMINI_API_KEY to enable automated before/after comparison.')
+        if not before_bytes:
+            reasons.append('Before photo bytes unavailable (no file or reachable URL).')
+        if not after_bytes:
+            reasons.append('After photo bytes unavailable (upload a completion photo).')
         return {
             'cleanup_score': score,
             'verified': False,
             'verdict': 'Manual review required (AI vision unavailable)',
-            'reasons': ['Set GEMINI_API_KEY to enable automated before/after comparison.'],
+            'observation': '',
+            'reasons': reasons or ['Heuristic fallback score.'],
             'source': 'heuristic_engine',
         }
 

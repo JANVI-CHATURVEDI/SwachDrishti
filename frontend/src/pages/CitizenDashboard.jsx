@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import api from '../api/client';
 import MapView from '../components/MapView';
 import Modal from '../components/Modal';
+import ReportDetailModal from '../components/ReportDetailModal';
 import StatusBadge from '../components/StatusBadge';
 import PriorityBadge from '../components/PriorityBadge';
 import ImpactCard from '../components/ImpactCard';
@@ -873,7 +874,20 @@ export default function CitizenDashboard() {
       )}
 
       {openReport && (
-        <Modal onClose={() => setOpenReport(null)}>
+        <ReportDetailModal
+          report={openReport}
+          onClose={() => setOpenReport(null)}
+          role={user?.role || 'CITIZEN'}
+          currentUser={user}
+          categories={categories}
+          showAssign={false}
+          onUpdated={(updated) => { setReports((prev) => prev.map((r) => (r.id === updated.id ? updated : r))); setOpenReport(updated); }}
+          verifyAction={openReport.status === 'RESOLVED' && !(openReport.citizen_verification || openReport.verification) ? (
+            <button onClick={() => { setVerifyingReport(openReport); setOpenReport(null); }} className="btn-primary btn-sm">
+              Confirm Cleanup
+            </button>
+          ) : null}
+        >
           <div
             className="modal-pop my-auto max-h-[85vh] w-full max-w-lg shrink-0 overflow-y-auto rounded-3xl bg-white shadow-lift"
           >
@@ -1039,7 +1053,7 @@ export default function CitizenDashboard() {
               </div>
             </div>
           </div>
-        </Modal>
+        </ReportDetailModal>
       )}
 
       {verifyingReport && (

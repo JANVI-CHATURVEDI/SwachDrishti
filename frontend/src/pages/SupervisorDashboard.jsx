@@ -5,11 +5,14 @@ import StatusBadge from '../components/StatusBadge';
 import PriorityBadge from '../components/PriorityBadge';
 import StaffCreator from '../components/StaffCreator';
 import Modal from '../components/Modal';
+import ReportDetailModal from '../components/ReportDetailModal';
+import { useAuth } from '../context/AuthContext';
 import { Users, AlertCircle, CheckCircle, Flame, UserCheck, ArrowRight, RefreshCw, Radio, Sparkles, ShieldCheck } from 'lucide-react';
 import { Reveal } from '../components/motion';
 import { motion } from 'framer-motion';
 
 export default function SupervisorDashboard() {
+  const { user } = useAuth();
   const [teamSummary, setTeamSummary] = useState(null);
   const [reports, setReports] = useState([]);
   const [pickups, setPickups] = useState([]);
@@ -18,6 +21,43 @@ export default function SupervisorDashboard() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('dispatch'); 
   const [liveUpdates, setLiveUpdates] = useState(true);
+  const [detailReport, setDetailReport] = useState(null);
+  const [expandedWorkerId, setExpandedWorkerId] = useState(null);
+  const [workerTasks, setWorkerTasks] = useState({});
+  const [loadingWorkerTasks, setLoadingWorkerTasks] = useState(null);
+
+  const toggleBlacklist = async (worker) => {
+    if (!worker.id) return;
+    if (!worker.is_blacklisted && !window.confirm(`Blacklist @${worker.username}? They will be logged out and hidden from dispatch.`)) return;
+    try {
+      await api.post(`/api/auth/staff/${worker.id}/blacklist/`, { blacklisted: !worker.is_blacklisted });
+      fetchSupervisorData(false);
+    } catch (err) {
+      alert(err.response?.data?.detail || err.message);
+    }
+  };
+
+  const toggleWorkerTasks = async (worker) => {
+    const id = worker.id;
+    if (!id) return;
+    if (expandedWorkerId === id) {
+      setExpandedWorkerId(null);
+      return;
+    }
+    setExpandedWorkerId(id);
+    if (workerTasks[id]) return;
+    setLoadingWorkerTasks(id);
+    try {
+      const res = await api.get(`/api/operations/tasks/?worker_id=${id}`);
+      const tasks = res.data?.results || res.data || [];
+      setWorkerTasks((prev) => ({ ...prev, [id]: tasks }));
+    } catch (err) {
+      console.error('Worker tasks fetch error:', err);
+      setWorkerTasks((prev) => ({ ...prev, [id]: [] }));
+    } finally {
+      setLoadingWorkerTasks(null);
+    }
+  };
 
   const [assignTarget, setAssignTarget] = useState(null);
   const [selectedWorkerId, setSelectedWorkerId] = useState('');
@@ -129,7 +169,7 @@ export default function SupervisorDashboard() {
           items={reports}
           hotspots={hotspots}
           pickups={pickups}
-          onItemClick={(item) => setAssignTarget({ ...item, kind: 'report' })}
+          onItemClick={(item) => setDetailReport({ ...item, kind: 'report' })}
         />
       </div>
 
@@ -190,7 +230,7 @@ export default function SupervisorDashboard() {
 
             <div className="divide-y divide-slate-100">
               {reports.filter(r => r.status === 'REPORTED' || r.status === 'VERIFIED').map((report) => (
-                <div key={report.id} className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition hover:bg-paper-2/70">
+                <div key={report.id} onClick={() => setDetailReport(report)} title="Open issue details" className="p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition hover:bg-paper-2/70 cursor-pointer">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-slate-900 text-sm">{report.title}</span>
@@ -203,7 +243,7 @@ export default function SupervisorDashboard() {
                   <div className="flex items-center gap-3">
                     <PriorityBadge level={report.priority_level} score={report.priority_score} factors={report.priority_factors} />
                     <button
-                      onClick={() => setAssignTarget({ ...report, kind: 'report' })}
+                      onClick={(e) => { e.stopPropagation(); setDetailReport(report); }}
                       className="btn-primary btn-sm"
                     >
                       <span>Dispatch</span>
@@ -266,7 +306,7 @@ export default function SupervisorDashboard() {
             <div className="divide-y divide-slate-100">
               {completedReports
                 .map((report) => (
-                  <div key={report.id} className="p-5 space-y-3 transition hover:bg-paper-2/70">
+                  <div key={report.id} onClick={() => setDetailReport(report)} title="Open issue details" className="p-5 space-y-3 transition hover:bg-paper-2/70 cursor-pointer">
                     <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2">
                       <div>
                         <div className="font-bold text-slate-900 text-sm">#{report.id} · {report.title}</div>
@@ -288,6 +328,9 @@ export default function SupervisorDashboard() {
                     {report.cleanup_verdict && (
                       <div className="text-xs bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-slate-700">
                         <strong>AI Audit Verdict:</strong> {report.cleanup_verdict}
+                        {report.cleanup_observation && (
+                          <div className="mt-1 leading-relaxed">AI saw: {report.cleanup_observation}</div>
+                        )}
                       </div>
                     )}
 
@@ -321,19 +364,85 @@ export default function SupervisorDashboard() {
         <div className="card space-y-4 p-6">
           <h3 className="h-card border-b border-black/[0.05] pb-3 text-base text-ink-900">Crew Workload Roster</h3>
           <div className="space-y-3">
-            {(teamSummary?.workers_status || workers).map((worker, idx) => (
-              <div key={worker.id || idx} className="flex items-center justify-between rounded-xl bg-paper-2/70 p-3 ring-1 ring-black/[0.04]">
-                <div>
-                  <div className="font-bold text-slate-900 text-xs">{worker.username || worker.name || `Worker ${idx + 1}`}</div>
-                  <div className="text-xs text-slate-500">{worker.ward || 'Central Ward'}</div>
+            {(teamSummary?.workers_status || workers).map((worker, idx) => {
+              const wid = worker.id || idx;
+              const expanded = expandedWorkerId === worker.id;
+              const tasks = workerTasks[worker.id] || [];
+              return (
+                <div key={wid} className={`overflow-hidden rounded-xl ring-1 ring-black/[0.04] ${worker.is_blacklisted ? 'bg-rose-50/60' : 'bg-paper-2/70'}`}>
+                  <button
+                    onClick={() => toggleWorkerTasks(worker)}
+                    title={worker.id ? 'Click to view assigned tasks' : undefined}
+                    className="flex w-full items-center justify-between p-3 text-left transition hover:bg-paper-2"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2 text-xs font-bold text-slate-900">
+                        {worker.username || worker.name || `Worker ${idx + 1}`}
+                        {worker.is_blacklisted ? (
+                          <span className="rounded-full bg-rose-600 px-2 py-0.5 text-xs font-black text-white">BLACKLISTED</span>
+                        ) : worker.status && (
+                          <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${worker.status === 'Available' ? 'bg-emerald-100 text-emerald-700' : worker.status === 'Busy' ? 'bg-rose-100 text-rose-700' : 'bg-amber-100 text-amber-700'}`}>
+                            {worker.status}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        {worker.zone || worker.ward || 'Central Ward'}
+                        {worker.completed_today !== undefined && ` · ${worker.completed_today} done today`}
+                        {worker.overdue_tasks ? ` · ${worker.overdue_tasks} overdue` : ''}
+                      </div>
+                    </div>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <span className="rounded-full bg-blue-100/70 px-2 py-0.5 text-xs font-bold text-blue-700">
+                        {worker.active_tasks_count ?? worker.active_tasks ?? (idx % 3 + 1)} tasks
+                      </span>
+                      {worker.id && (
+                        <span
+                          role="button"
+                          tabIndex={0}
+                          onClick={(e) => { e.stopPropagation(); toggleBlacklist(worker); }}
+                          onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); toggleBlacklist(worker); } }}
+                          title={worker.is_blacklisted ? 'Unblock worker' : 'Blacklist worker'}
+                          className={`rounded-lg px-2 py-1 text-xs font-bold transition ${worker.is_blacklisted ? 'bg-emerald-100 text-emerald-700 hover:bg-emerald-200' : 'bg-rose-50 text-rose-700 hover:bg-rose-100'}`}
+                        >
+                          {worker.is_blacklisted ? 'Unblock' : 'Blacklist'}
+                        </span>
+                      )}
+                      {worker.id && <span className="text-xs font-bold text-slate-400">{expanded ? '▲' : '▼'}</span>}
+                    </div>
+                  </button>
+                  {expanded && (
+                    <div className="space-y-2 border-t border-black/[0.05] bg-white/60 p-3">
+                      {loadingWorkerTasks === worker.id && (
+                        <div className="py-2 text-center text-xs text-slate-500">Loading tasks…</div>
+                      )}
+                      {loadingWorkerTasks !== worker.id && tasks.length === 0 && (
+                        <div className="py-2 text-center text-xs text-slate-500">No tasks assigned.</div>
+                      )}
+                      {tasks.map((t) => {
+                        const rep = t.report_details || t.report;
+                        const pick = t.pickup_details || t.pickup;
+                        const label = rep?.title || (pick ? `${(pick.waste_type || 'BULK').replace(/_/g, ' ')} Pickup #${pick.id}` : `Task #${t.id}`);
+                        return (
+                          <div
+                            key={t.id}
+                            onClick={() => rep?.id && setDetailReport(rep)}
+                            title={rep?.id ? 'Open issue details' : undefined}
+                            className={`flex items-center justify-between gap-2 rounded-lg border border-black/[0.04] bg-white p-2 text-xs ${rep?.id ? 'cursor-pointer hover:bg-leaf-50/60' : ''}`}
+                          >
+                            <div className="min-w-0">
+                              <div className="truncate font-bold text-slate-800">Job #{t.id} · {label}</div>
+                              <div className="truncate text-slate-500">{rep?.address || pick?.address || ''}</div>
+                            </div>
+                            <StatusBadge status={t.status} />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
-                <div className="text-right">
-                  <span className="text-xs font-bold text-blue-700 bg-blue-100/70 px-2 py-0.5 rounded-full">
-                    {worker.active_tasks_count ?? (idx % 3 + 1)} tasks
-                  </span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <details className="rounded-xl border border-dashed border-slate-300 overflow-hidden">
             <summary className="flex cursor-pointer list-none items-center justify-between px-4 py-2.5 text-xs font-bold text-leaf-700 transition hover:bg-leaf-50">
@@ -346,6 +455,21 @@ export default function SupervisorDashboard() {
           </details>
         </div>
       </div>
+
+      {detailReport && (
+        <ReportDetailModal
+          report={detailReport}
+          onClose={() => setDetailReport(null)}
+          role={user?.role || 'SUPERVISOR'}
+          currentUser={user}
+          workers={workers}
+          onUpdated={(updated) => {
+            setReports((prev) => prev.map((r) => (r.id === updated.id ? updated : r)));
+            setDetailReport(updated);
+            fetchSupervisorData(false);
+          }}
+        />
+      )}
 
       {assignTarget && (
         <Modal onClose={() => setAssignTarget(null)}>
@@ -371,7 +495,7 @@ export default function SupervisorDashboard() {
                   className="input"
                 >
                   <option value="">-- Choose Operative --</option>
-                  {workers.map((w) => (
+                  {workers.filter((w) => !w.is_blacklisted).map((w) => (
                     <option key={w.id} value={w.id}>{w.username} ({w.zone || w.ward || 'General'})</option>
                   ))}
                   {workers.length === 0 && <option value="2">Ramesh Kumar (Central Ward)</option>}

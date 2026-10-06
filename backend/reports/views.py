@@ -11,6 +11,8 @@ from .serializers import WasteCategorySerializer, WasteReportSerializer, Citizen
 from hotspots.models import Hotspot
 from core.geo import haversine_distance
 from core.priority import calculate_priority
+from accounts.permissions import IsReportOwnerOrStaff
+from rest_framework.exceptions import PermissionDenied
 
 class WasteCategoryListView(generics.ListAPIView):
     queryset = WasteCategory.objects.all()
@@ -72,7 +74,67 @@ class CheckDuplicateReportView(APIView):
 class WasteReportViewSet(viewsets.ModelViewSet):
     queryset = WasteReport.objects.all()
     serializer_class = WasteReportSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsReportOwnerOrStaff]
+
+    COMPLETED_STATUSES = ('RESOLVED', 'CITIZEN_VERIFIED')
+    CITIZEN_EDITABLE = {'title', 'description', 'address', 'severity', 'category'}
+    SUPERVISOR_EDITABLE = {'title', 'description', 'address', 'zone', 'severity', 'category', 'status'}
+    SUPERVISOR_STATUS_OPTIONS = {'REPORTED', 'VERIFIED', 'ASSIGNED', 'IN_PROGRESS', 'REOPENED'}
+
+    def _role(self):
+        u = self.request.user
+        if not (u and u.is_authenticated):
+            return None
+        return getattr(u, 'role', None)
+
+    def perform_update(self, serializer):
+        instance = self.get_object()
+        role = self._role()
+        user = self.request.user if (self.request.user and self.request.user.is_authenticated) else None
+
+        if instance.status in self.COMPLETED_STATUSES and role != 'ADMIN':
+            raise PermissionDenied('Completed reports are locked. Only an admin can edit them.')
+
+        if role == 'WORKER':
+            raise PermissionDenied('Workers update reports via task transitions, not direct edits.')
+
+        if role == 'CITIZEN':
+            if not user or instance.citizen_id != user.id:
+                raise PermissionDenied('You can only edit your own reports.')
+            if instance.status != 'REPORTED':
+                raise PermissionDenied('Citizens can only edit reports still in REPORTED state.')
+            disallowed = set(self.request.data.keys()) - self.CITIZEN_EDITABLE
+            # allow multipart noise keys
+            disallowed -= {'image'}
+            if disallowed:
+                raise PermissionDenied(f'Citizens cannot change: {", ".join(sorted(disallowed))}.')
+
+        if role == 'SUPERVISOR':
+            disallowed = set(self.request.data.keys()) - self.SUPERVISOR_EDITABLE
+            if disallowed:
+                raise PermissionDenied(f'Supervisors cannot change: {", ".join(sorted(disallowed))}.')
+            new_status = self.request.data.get('status')
+            if new_status and new_status not in self.SUPERVISOR_STATUS_OPTIONS:
+                raise PermissionDenied('Supervisors cannot mark reports RESOLVED directly. Complete via worker task with photo evidence.')
+
+        severity_changed = 'severity' in self.request.data and self.request.data.get('severity') != instance.severity
+        report = serializer.save()
+        if severity_changed:
+            try:
+                age_hours = (timezone.now() - instance.created_at).total_seconds() / 3600.0 if instance.created_at else 0.0
+                score, level, factors = calculate_priority(
+                    severity=report.severity,
+                    nearby_reports_count=0,
+                    age_in_hours=min(age_hours, 72.0),
+                    is_recurring_hotspot=False,
+                    is_sensitive_context=False,
+                )
+                report.priority_score = score
+                report.priority_level = level
+                report.priority_factors = factors
+                report.save(update_fields=['priority_score', 'priority_level', 'priority_factors'])
+            except Exception:
+                pass
 
     def get_queryset(self):
         qs = WasteReport.objects.select_related(

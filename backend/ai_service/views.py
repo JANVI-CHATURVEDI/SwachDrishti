@@ -279,9 +279,16 @@ class CleanupVerifyView(APIView):
             except (WasteReport.DoesNotExist, ValueError, TypeError):
                 return Response({'error': 'Report not found'}, status=http_status.HTTP_404_NOT_FOUND)
             if rep.image:
-                before_bytes = rep.image.read()
+                try:
+                    before_bytes = rep.image.read()
+                except Exception:
+                    before_bytes = None
+            if before_bytes is None:
+                before_bytes = AIService.fetch_image_bytes(rep.image_url)
 
         after_bytes = after.read() if after else None
+        if after_bytes is None:
+            after_bytes = AIService.fetch_image_bytes(request.data.get('after_image_url', ''))
         result = AIService.compare_cleanup(before_bytes, after_bytes, notes)
         result['ai_suggested'] = result.get('source') == 'gemini_vision'
         return Response(result)

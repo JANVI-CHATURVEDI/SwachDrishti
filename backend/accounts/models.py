@@ -17,6 +17,7 @@ class User(AbstractUser):
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default=ROLE_CITIZEN)
     phone = models.CharField(max_length=20, blank=True, default='')
     zone = models.CharField(max_length=100, blank=True, default='Zone 1 - Central')
+    is_blacklisted = models.BooleanField(default=False)
     impact_points = models.IntegerField(default=50)
     badges = models.JSONField(default=list, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)

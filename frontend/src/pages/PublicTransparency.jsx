@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import api from '../api/client';
 import MapView from '../components/MapView';
 import StatusBadge from '../components/StatusBadge';
+import ReportDetailModal from '../components/ReportDetailModal';
 import { Eye, ShieldCheck, CheckCircle2, TrendingUp, RefreshCw, BarChart2 } from 'lucide-react';
 import { Reveal } from '../components/motion';
 
@@ -10,6 +11,7 @@ export default function PublicTransparency() {
   const [reports, setReports] = useState([]);
   const [hotspots, setHotspots] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [detailReport, setDetailReport] = useState(null);
 
   const fetchPublicData = async () => {
     try {
@@ -75,6 +77,7 @@ export default function PublicTransparency() {
           height="420px"
           items={reports}
           hotspots={hotspots}
+          onItemClick={(item) => setDetailReport(item)}
         />
       </div>
 
@@ -88,7 +91,7 @@ export default function PublicTransparency() {
 
         <div className="divide-y divide-slate-100">
           {reports.slice(0, 8).map((report) => (
-            <div key={report.id} className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+            <div key={report.id} onClick={() => setDetailReport(report)} title="Open issue details" className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs cursor-pointer hover:bg-paper-2/70">
               <div>
                 <span className="font-bold text-slate-800 text-sm">{report.title}</span>
                 <div className="text-slate-500">{report.address}</div>
@@ -107,6 +110,14 @@ export default function PublicTransparency() {
           ))}
         </div>
       </div>
+      {detailReport && (
+        <ReportDetailModal
+          report={detailReport}
+          onClose={() => setDetailReport(null)}
+          role="PUBLIC"
+          showAssign={false}
+        />
+      )}
     </div>
   );
 }

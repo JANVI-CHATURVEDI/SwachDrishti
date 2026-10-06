@@ -57,6 +57,9 @@ class AssignTaskView(APIView):
         except User.DoesNotExist:
             return Response({'error': 'Worker not found'}, status=status.HTTP_404_NOT_FOUND)
 
+        if getattr(worker, 'is_blacklisted', False):
+            return Response({'error': f'{worker.username} is blacklisted and cannot be assigned tasks.'}, status=status.HTTP_400_BAD_REQUEST)
+
         supervisor = request.user if request.user.is_authenticated else None
         priority_level = 'HIGH'
 
@@ -169,6 +172,8 @@ class TransitionTaskStatusView(APIView):
                         before_bytes = task.report.image.read()
                     except Exception:
                         pass
+                if not before_bytes:
+                    before_bytes = AIService.fetch_image_bytes(task.report.image_url)
                 after_bytes = None
                 if after_image:
                     try:
@@ -176,11 +181,22 @@ class TransitionTaskStatusView(APIView):
                         after_image.seek(0)
                     except Exception:
                         pass
+                if not after_bytes:
+                    after_bytes = AIService.fetch_image_bytes(after_image_url or task.report.after_image_url)
 
                 verification_res = AIService.compare_cleanup(before_bytes, after_bytes, notes=notes)
+                if verification_res.get('source') == 'gemini_vision' and not verification_res.get('verified'):
+                    return Response({
+                        'detail': 'AI verification failed (score %s/100). Retake the completion photo showing a cleaned site. AI saw: %s' % (
+                            verification_res.get('cleanup_score'), verification_res.get('observation') or verification_res.get('verdict')),
+                        'verdict': verification_res.get('verdict'),
+                        'observation': verification_res.get('observation'),
+                        'cleanup_score': verification_res.get('cleanup_score'),
+                    }, status=status.HTTP_400_BAD_REQUEST)
                 task.report.cleanup_score = verification_res.get('cleanup_score', 85 if after_image or after_image_url else 0)
                 task.report.cleanup_verified = verification_res.get('verified', bool(after_image or after_image_url))
                 task.report.cleanup_verdict = verification_res.get('verdict', 'Cleanup verified by worker evidence')
+                task.report.cleanup_observation = (verification_res.get('observation') or '')[:500]
                 task.report.save()
 
                 from incidents.models import Evidence
@@ -263,6 +279,7 @@ class SupervisorTeamSummaryView(APIView):
                 'zone': w.zone or 'Central Ward',
                 'ward': w.zone or 'Central Ward',
                 'phone': w.phone,
+                'is_blacklisted': w.is_blacklisted,
                 'total_tasks': s.get('total_tasks', 0),
                 'active_tasks': active_count,
                 'active_tasks_count': active_count,

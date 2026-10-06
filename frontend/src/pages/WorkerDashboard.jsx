@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import api from '../api/client';
 import MapView from '../components/MapView';
 import StatusBadge from '../components/StatusBadge';
+import ReportDetailModal from '../components/ReportDetailModal';
 import PriorityBadge from '../components/PriorityBadge';
 import ImpactCard from '../components/ImpactCard';
 import { useAuth } from '../context/AuthContext';
@@ -24,6 +25,7 @@ export default function WorkerDashboard() {
   const [photoPreview, setPhotoPreview] = useState(null);
   const [precheck, setPrecheck] = useState(null);
   const [prechecking, setPrechecking] = useState(false);
+  const [detailReport, setDetailReport] = useState(null);
 
   const fetchTasks = async (showLoading = true) => {
     try {
@@ -308,6 +310,8 @@ export default function WorkerDashboard() {
               return rep && rep.id === item.id;
             });
             if (matched) setSelectedTask(matched);
+            const rep = getTaskReport(matched || {}) || item;
+            if (rep?.id) setDetailReport(rep);
           }}
         />
       </div>
@@ -368,6 +372,14 @@ export default function WorkerDashboard() {
                         score={rep.priority_score}
                         factors={rep.priority_factors}
                       />
+                    )}
+                    {rep?.id && (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setSelectedTask(task); setDetailReport(rep); }}
+                        className="text-xs font-bold text-slate-500 hover:text-emerald-700"
+                      >
+                        Details →
+                      </button>
                     )}
                   </div>
                 </div>
@@ -484,6 +496,9 @@ export default function WorkerDashboard() {
                           </span>
                         </div>
                         <div className="italic">"{precheck.verdict}"</div>
+                        {precheck.observation && (
+                          <div className="leading-relaxed">AI sees: {precheck.observation}</div>
+                        )}
                         {Array.isArray(precheck.reasons) && precheck.reasons.length > 0 && (
                           <ul className="space-y-0.5">
                             {precheck.reasons.map((r, i) => <li key={i}>• {r}</li>)}
@@ -494,11 +509,27 @@ export default function WorkerDashboard() {
 
                     <button
                       onClick={() => handleStatusChange(selectedTask.id, 'COMPLETED')}
-                      disabled={transitioning}
-                      className="btn-primary w-full"
+                      disabled={transitioning || !afterPhoto || (precheck?.source === 'gemini_vision' && !precheck?.verified)}
+                      title={
+                        !afterPhoto
+                          ? 'Attach a completion photo first'
+                          : precheck?.source === 'gemini_vision' && !precheck?.verified
+                            ? 'AI has not verified this cleanup — retake the photo'
+                            : undefined
+                      }
+                      className="btn-primary w-full disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <CheckCheck className="w-4 h-4" /> {transitioning ? 'Verifying with AI...' : 'Submit Resolution with Evidence'}
                     </button>
+                    {!afterPhoto && (
+                      <div className="text-xs font-semibold text-slate-500">Attach a completion photo to enable submit.</div>
+                    )}
+                    {precheck?.source === 'gemini_vision' && !precheck?.verified && (
+                      <div className="text-xs font-semibold text-rose-600">AI verification must pass before submit — retake the photo showing a cleaned site.</div>
+                    )}
+                    {precheck?.source !== 'gemini_vision' && afterPhoto && (
+                      <div className="text-xs font-semibold text-amber-600">AI unavailable — submit allowed, supervisor will review manually.</div>
+                    )}
                   </div>
                 )}
 
@@ -520,6 +551,9 @@ export default function WorkerDashboard() {
                         {getTaskReport(selectedTask)?.cleanup_verdict && (
                           <div className="text-slate-600 italic">"{getTaskReport(selectedTask).cleanup_verdict}"</div>
                         )}
+                        {getTaskReport(selectedTask)?.cleanup_observation && (
+                          <div className="text-slate-600">AI saw: {getTaskReport(selectedTask).cleanup_observation}</div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -533,6 +567,15 @@ export default function WorkerDashboard() {
           )}
         </div>
       </div>
+      {detailReport && (
+        <ReportDetailModal
+          report={detailReport}
+          onClose={() => setDetailReport(null)}
+          role={user?.role || 'WORKER'}
+          currentUser={user}
+          showAssign={false}
+        />
+      )}
     </div>
   );
 }

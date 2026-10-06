@@ -50,7 +50,7 @@ class DemoLoginView(APIView):
         }
         target_role = role_map.get(role_req, User.ROLE_ADMIN)
         
-        user = User.objects.filter(role=target_role).first()
+        user = User.objects.filter(role=target_role, is_blacklisted=False).first()
         if not user:
             username = f"demo_{role_req}"
             user, created = User.objects.get_or_create(
@@ -101,7 +101,50 @@ class WorkersListView(generics.ListAPIView):
     pagination_class = None
 
     def get_queryset(self):
-        return User.objects.filter(role=User.ROLE_WORKER)
+        u = self.request.user
+        is_admin = u.is_authenticated and (u.role == User.ROLE_ADMIN or u.is_superuser)
+        if is_admin:
+            return User.objects.filter(role__in=[User.ROLE_WORKER, User.ROLE_SUPERVISOR])
+        return User.objects.filter(role=User.ROLE_WORKER, is_blacklisted=False)
+
+class BlacklistStaffView(APIView):
+    """Blacklist / unblock a worker (supervisor+) or supervisor (admin only).
+
+    Supervisor may blacklist WORKERs only. Admin may blacklist WORKERs and
+    SUPERVISORs, never ADMINs (unless superuser) and never themselves.
+    Blacklisting deletes auth tokens (forced logout) and hides the account
+    from dispatch lists; existing task assignments stay for reassignment.
+    """
+    permission_classes = [IsSupervisor]
+
+    def post(self, request, pk):
+        try:
+            target = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response({'detail': 'Staff account not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        me = request.user
+        is_admin = me.role == User.ROLE_ADMIN or me.is_superuser
+        blacklisted = request.data.get('blacklisted', True)
+        blacklisted = blacklisted in (True, 'true', 'True', 1, '1')
+
+        if target.pk == me.pk:
+            return Response({'detail': 'You cannot blacklist yourself.'}, status=status.HTTP_400_BAD_REQUEST)
+        if target.role not in (User.ROLE_WORKER, User.ROLE_SUPERVISOR):
+            return Response({'detail': 'Only worker or supervisor accounts can be blacklisted.'}, status=status.HTTP_400_BAD_REQUEST)
+        if target.role == User.ROLE_SUPERVISOR and not is_admin:
+            return Response({'detail': 'Only administrators can blacklist a supervisor.'}, status=status.HTTP_403_FORBIDDEN)
+        if target.role == User.ROLE_ADMIN and not me.is_superuser:
+            return Response({'detail': 'Admin accounts cannot be blacklisted.'}, status=status.HTTP_403_FORBIDDEN)
+
+        target.is_blacklisted = blacklisted
+        target.save(update_fields=['is_blacklisted'])
+        if blacklisted:
+            Token.objects.filter(user=target).delete()
+        return Response({
+            'user': UserSerializer(target).data,
+            'message': f"{target.username} {'blacklisted' if blacklisted else 'unblocked'}.",
+        })
 
 class StaffCreateView(APIView):
     permission_classes = [IsSupervisor]

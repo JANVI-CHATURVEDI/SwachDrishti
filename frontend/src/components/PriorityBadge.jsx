@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, HelpCircle, Sparkles } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useDismiss } from './ui';
 
 const priorityConfigs = {
   CRITICAL: {
@@ -69,13 +70,14 @@ export default function PriorityBadge({ level = 'MEDIUM', score, factors = [], s
   const norm = (level || 'MEDIUM').toUpperCase();
   const config = priorityConfigs[norm] || priorityConfigs.MEDIUM;
   const toggleable = factors.length > 0;
+  const dismissRef = useDismiss(expanded, () => setExpanded(false));
 
   const chart = factors
     .map((f, i) => ({ text: f, weight: factorWeight(f, i) }))
     .sort((a, b) => b.weight - a.weight);
 
   return (
-    <div className="relative inline-block">
+    <div ref={dismissRef} className="relative inline-block">
       <button
         type="button"
         aria-expanded={expanded}

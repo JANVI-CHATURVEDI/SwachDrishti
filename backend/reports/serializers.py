@@ -30,7 +30,7 @@ class WasteReportSerializer(serializers.ModelSerializer):
             'address', 'zone', 'severity', 'status', 'priority_score', 'priority_level',
             'priority_factors', 'is_duplicate', 'duplicate_of', 'duplicates_count',
             'citizen_verification', 'verification', 'after_image', 'after_image_url',
-            'cleanup_score', 'cleanup_verified', 'cleanup_verdict',
+            'cleanup_score', 'cleanup_verified', 'cleanup_verdict', 'cleanup_observation',
             'created_at', 'updated_at', 'resolved_at', 'verified_at'
         ]
         read_only_fields = ['id', 'priority_score', 'priority_level', 'priority_factors', 'created_at', 'updated_at']

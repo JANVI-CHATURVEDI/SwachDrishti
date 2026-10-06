@@ -7,9 +7,10 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = [
             'id', 'username', 'email', 'first_name', 'last_name',
-            'role', 'phone', 'zone', 'impact_points', 'badges', 'created_at'
+            'role', 'phone', 'zone', 'impact_points', 'badges', 'created_at',
+            'is_blacklisted'
         ]
-        read_only_fields = ['id', 'created_at', 'impact_points', 'badges']
+        read_only_fields = ['id', 'created_at', 'impact_points', 'badges', 'is_blacklisted']
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, min_length=6)
@@ -49,6 +50,8 @@ class LoginSerializer(serializers.Serializer):
                 user = None
         if not user:
             raise serializers.ValidationError("Invalid credentials. Please verify your username/email and password.")
+        if getattr(user, 'is_blacklisted', False):
+            raise serializers.ValidationError("This account has been blacklisted. Contact your administrator.")
         data['user'] = user
         return data
 

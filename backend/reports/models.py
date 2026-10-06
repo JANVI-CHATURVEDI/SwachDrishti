@@ -79,6 +79,7 @@ class WasteReport(models.Model):
     cleanup_score = models.IntegerField(default=0)
     cleanup_verified = models.BooleanField(default=False)
     cleanup_verdict = models.CharField(max_length=200, blank=True, default='')
+    cleanup_observation = models.TextField(blank=True, default='')
 
     class Meta:
         ordering = ['-priority_score', '-created_at']

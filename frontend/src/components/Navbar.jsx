@@ -183,9 +183,12 @@ export default function Navbar({ activeTab, setActiveTab }) {
 
   const visibleLinks = LINKS.filter(l => !l.roles || !user || role === 'ADMIN' || l.roles.includes(role));
   // Public links stay flat in the bar; role portals are folded into one
-  // "Workspaces" menu so the row never gets crowded.
-  const primaryLinks = visibleLinks.filter(l => !l.roles);
-  const roleLinks = visibleLinks.filter(l => Boolean(l.roles));
+  // "Workspaces" menu so the row never gets crowded. Admins get no
+  // Workspaces menu (other portals mean nothing to them) — only their
+  // own Command Center link, shown flat.
+  const isAdmin = role === 'ADMIN';
+  const primaryLinks = visibleLinks.filter(l => !l.roles || (isAdmin && l.roles.includes('ADMIN')));
+  const roleLinks = visibleLinks.filter(l => Boolean(l.roles) && !isAdmin);
   const workspacesActive = roleLinks.some(l => location.pathname === l.path);
 
   const surface = !dark
