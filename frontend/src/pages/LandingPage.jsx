@@ -93,9 +93,9 @@ const FEATURES = [
 ];
 
 const TRUST = [
-  { icon: BadgeCheck, label: 'Citizen-verified cleanups' },
-  { icon: Truck, label: 'Same-day crew dispatch' },
-  { icon: Shield, label: 'Zero-PII by design' },
+  { icon: BadgeCheck, label: 'Verified cleanups' },
+  { icon: Truck, label: 'Same-day dispatch' },
+  { icon: Shield, label: 'Zero PII' },
   { icon: Eye, label: 'Open civic data' },
 ];
 
@@ -129,7 +129,7 @@ function SectionHead({ kicker, title, sub, center = false, tone = 'dark' }) {
 
 function HeroHeadline() {
   const reduced = useReducedMotion();
-  const lines = ['See the waste.', 'Spark the action.'];
+  const lines = ['See it.', 'Report it.'];
   return (
     <h1 className="h-display max-w-3xl">
       {lines.map((line, li) => (
@@ -339,7 +339,7 @@ export default function LandingPage() {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-lime-400 opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-lime-400" />
                 </span>
-                #1 civic sanitation platform
+                Live in 5 pilot wards
               </span>
             </Reveal>
 
@@ -348,10 +348,8 @@ export default function LandingPage() {
             </div>
 
             <Reveal delay={0.5}>
-              <p className="mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
-                SwachDrishti closes the loop between citizens, field sanitation teams, supervisors and city
-                administrators — with explainable priority scoring, recurring hotspot detection and
-                verifiable cleanup proofs.
+              <p className="mt-6 max-w-xl text-base leading-relaxed text-white/75 sm:text-lg">
+                One photo routes the crew, sets the priority and publishes the proof.
               </p>
             </Reveal>
 
@@ -362,26 +360,26 @@ export default function LandingPage() {
                   <ArrowRight className="h-4 w-4" strokeWidth={2} />
                 </button>
                 <button onClick={() => navigate('/public')} className="btn-white">
-                  <Play className="h-4 w-4" strokeWidth={2} /> Watch live transparency
-                </button>
-                <button onClick={() => navigate('/login')} className="btn text-white/75 hover:text-white">
-                  Sign in / Create account
+                  <Play className="h-4 w-4" strokeWidth={2} /> Watch it live
                 </button>
               </div>
             </Reveal>
 
-            {/* trust badges */}
+            {/* credentials */}
             <Reveal delay={0.74}>
-              <ul className="mt-9 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                {TRUST.map((t) => (
-                  <li key={t.label} className="flex items-center gap-2.5 text-sm font-semibold text-slate-200">
-                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-lime-400/15 text-lime-300 ring-1 ring-lime-400/30">
-                      <t.icon className="h-3.5 w-3.5" strokeWidth={2} />
-                    </span>
-                    {t.label}
-                  </li>
-                ))}
-              </ul>
+              <div className="mt-10 border-t border-white/10 pt-6">
+                <ul className="flex flex-wrap items-center gap-x-6 gap-y-3">
+                  {TRUST.map((t) => (
+                    <li
+                      key={t.label}
+                      className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.1em] text-white/70"
+                    >
+                      <t.icon className="h-3.5 w-3.5 shrink-0 text-lime-300" strokeWidth={2} />
+                      {t.label}
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </Reveal>
           </motion.div>
 
@@ -394,7 +392,7 @@ export default function LandingPage() {
                   alt="Sanitation crew working beside a collection truck and colour-coded recycling bins"
                   className="h-[300px] w-full object-cover object-center sm:h-[380px] lg:h-[440px]"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-ink-950/80 via-transparent to-ink-950/25" />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink-950/70 via-transparent to-ink-950/25" />
 
                 <span className="absolute left-4 top-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-ink-950/70 px-3 py-1.5 text-xs font-bold text-white backdrop-blur-xl">
                   <span className="relative flex h-2 w-2">
@@ -403,19 +401,9 @@ export default function LandingPage() {
                   </span>
                   Live · Ward 4 route
                 </span>
-
-                <div className="absolute inset-x-4 bottom-4 flex items-center gap-3 rounded-2xl border border-white/15 bg-ink-950/70 px-4 py-3 backdrop-blur-xl">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-lime-400/15 text-lime-300 ring-1 ring-lime-400/30">
-                    <Route className="h-4 w-4" strokeWidth={2} />
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block truncate text-sm font-bold text-white">Priority-weighted route</span>
-                    <span className="mono block text-xs text-white/60">8 stops · 4.2h median</span>
-                  </span>
-                </div>
               </div>
 
-              <VerifiedCard className="absolute -left-6 bottom-16 hidden w-64 xl:block" />
+              <VerifiedCard className="absolute -left-6 bottom-10 hidden w-64 xl:block" />
             </Reveal>
           </div>
         </div>
