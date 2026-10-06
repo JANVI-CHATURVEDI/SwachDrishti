@@ -129,7 +129,7 @@ function SectionHead({ kicker, title, sub, center = false, tone = 'dark' }) {
 
 function HeroHeadline() {
   const reduced = useReducedMotion();
-  const lines = ['See it.', 'Report it.'];
+  const lines = ['See the waste.', 'Spark the action.'];
   return (
     <h1 className="h-display max-w-3xl">
       {lines.map((line, li) => (
