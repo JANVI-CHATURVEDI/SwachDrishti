@@ -310,13 +310,21 @@ export default function LandingPage() {
           <img
             src="/hero-crew.jpg"
             alt=""
-            className="h-full w-full object-cover object-center opacity-45"
+            className="h-full w-full object-cover object-center opacity-55"
           />
           <div
             className="absolute inset-0"
             style={{
               background:
-                'linear-gradient(100deg,#06120D 0%,rgba(6,18,13,.96) 34%,rgba(6,18,13,.86) 58%,rgba(6,18,13,.58) 100%)',
+                'linear-gradient(100deg, rgba(7,32,22,.96) 0%, rgba(8,40,28,.93) 34%, rgba(11,52,37,.85) 58%, rgba(14,64,46,.62) 100%)',
+            }}
+          />
+          {/* soft emerald light source, top-right */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                'radial-gradient(58% 55% at 76% 16%, rgb(16 185 129 / .24) 0%, rgb(16 185 129 / .10) 42%, transparent 72%)',
             }}
           />
           <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-b from-transparent to-ink-950" />
