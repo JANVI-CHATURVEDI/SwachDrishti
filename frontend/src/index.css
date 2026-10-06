@@ -1,3 +1,59 @@
+/* ==========================================================================
+   Butler — the one typeface for the entire UI (display, body, numerals).
+   Designed by Fabian De Smet. Free for personal & commercial use,
+   CC BY-SA 4.0 — https://www.fabiandesmet.com/portfolio/butler-font
+   7 weights, self-hosted WOFF2 in ./fonts (no third-party font request).
+   ========================================================================== */
+@font-face {
+  font-family: "Butler";
+  src: url("./fonts/Butler-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Butler";
+  src: url("./fonts/Butler-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Butler";
+  src: url("./fonts/Butler-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Butler";
+  src: url("./fonts/Butler-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Butler";
+  src: url("./fonts/Butler-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Butler";
+  src: url("./fonts/Butler-ExtraBold.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Butler";
+  src: url("./fonts/Butler-Black.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,7 +68,7 @@
   }
   body {
     @apply bg-paper text-ink-900 font-sans antialiased;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-family: "Butler", "Playfair Display", Georgia, serif;
     overflow-x: hidden;
   }
   .dark body,
@@ -30,7 +86,7 @@
     border-radius: 6px;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: "Bricolage Grotesque", Inter, system-ui, sans-serif;
+    font-family: "Butler", "Playfair Display", Georgia, serif;
     letter-spacing: -0.02em;
   }
   /* nicer scrollbar */
@@ -73,33 +129,33 @@
     @apply inline-block text-xs font-semibold uppercase tracking-[0.14em] text-lime-400;
   }
   .h-display {
-    font-family: "Bricolage Grotesque", Inter, system-ui, sans-serif;
+    font-family: "Butler", "Playfair Display", Georgia, serif;
     font-weight: 800;
     letter-spacing: -0.035em;
     line-height: 0.98;
     font-size: clamp(2.75rem, 7vw, 6rem);
   }
   .h-section {
-    font-family: "Bricolage Grotesque", Inter, system-ui, sans-serif;
+    font-family: "Butler", "Playfair Display", Georgia, serif;
     font-weight: 700;
     letter-spacing: -0.03em;
     line-height: 1.04;
     font-size: clamp(1.9rem, 3.6vw, 3.1rem);
   }
   .h-card {
-    font-family: "Bricolage Grotesque", Inter, system-ui, sans-serif;
+    font-family: "Butler", "Playfair Display", Georgia, serif;
     font-weight: 700;
     letter-spacing: -0.02em;
     line-height: 1.15;
   }
   .stat-number {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "Butler", "Playfair Display", Georgia, serif;
     font-variant-numeric: tabular-nums;
-    font-weight: 500;
-    letter-spacing: -0.02em;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
   .mono {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "Butler", "Playfair Display", Georgia, serif;
     font-variant-numeric: tabular-nums;
   }
 
@@ -327,7 +383,7 @@
   height: 100%;
   border-radius: 1.5rem;
   z-index: 1;
-  font-family: Inter, system-ui, sans-serif;
+  font-family: "Butler", "Playfair Display", Georgia, serif;
   background: #eef0e8;
 }
 .leaflet-pane {
@@ -356,7 +412,7 @@
 .leaflet-control-attribution {
   background: rgba(255, 255, 255, 0.78) !important;
   backdrop-filter: blur(6px);
-  font-size: 10px !important;
+  font-size: 12px !important;
   color: #475569;
   border-radius: 8px 0 0 0;
   padding: 2px 6px !important;
@@ -403,16 +459,16 @@
   border-radius: 9999px;
   border: 2.5px solid #fff;
   color: #fff;
-  font-family: "JetBrains Mono", monospace;
-  font-size: 12px;
-  font-weight: 700;
+  font-family: "Butler", Georgia, serif;
+  font-size: 13px;
+  font-weight: 800;
   line-height: 1;
   box-shadow: 0 6px 14px -4px rgb(6 18 13 / 0.55);
 }
 .sd-pin--sm .sd-pin__dot {
   width: 22px;
   height: 22px;
-  font-size: 10px;
+  font-size: 12px;
   border-width: 2px;
 }
 
@@ -428,7 +484,7 @@
 }
 .leaflet-popup-content {
   margin: 0;
-  font-family: Inter, system-ui, sans-serif;
+  font-family: "Butler", "Playfair Display", Georgia, serif;
   line-height: 1.45;
 }
 .leaflet-popup-tip {

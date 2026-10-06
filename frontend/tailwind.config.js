@@ -69,9 +69,10 @@ export default {
         },
       },
       fontFamily: {
-        display: ['"Bricolage Grotesque"', 'Inter', 'system-ui', 'sans-serif'],
-        sans: ['Inter', 'Geist', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],
-        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'monospace'],
+        // One typeface for the whole product: Butler (self-hosted, see index.css).
+        display: ['Butler', '"Playfair Display"', 'Georgia', 'serif'],
+        sans: ['Butler', '"Playfair Display"', 'Georgia', 'serif'],
+        mono: ['Butler', '"Playfair Display"', 'Georgia', 'serif'],
       },
       borderRadius: {
         '4xl': '2rem',
