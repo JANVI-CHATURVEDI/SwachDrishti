@@ -301,7 +301,7 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="grain relative isolate -mt-16 overflow-hidden bg-ink-950 text-white">
+    <div className="grain relative isolate -mt-[72px] overflow-hidden bg-ink-950 text-white">
       {/* ============================================================
           HERO — dark forest-green stage with crew photography
           ============================================================ */}
@@ -330,7 +330,7 @@ export default function LandingPage() {
           <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-b from-transparent to-ink-950" />
         </motion.div>
 
-        <div className="relative mx-auto grid max-w-7xl gap-12 px-4 pb-20 pt-[6.5rem] sm:px-6 lg:grid-cols-12 lg:gap-8 lg:px-8 lg:pb-24 lg:pt-32">
+        <div className="relative mx-auto grid max-w-7xl gap-12 px-4 pb-20 pt-[7rem] sm:px-6 lg:grid-cols-12 lg:gap-8 lg:px-8 lg:pb-24 lg:pt-[8.5rem]">
           {/* ---- copy ---- */}
           <motion.div style={{ y: heroTextY }} className="lg:col-span-7">
             <Reveal delay={0}>

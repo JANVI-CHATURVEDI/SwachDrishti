@@ -31,7 +31,7 @@ function BrandPanel({ mode }) {
   const register = mode === 'register';
 
   return (
-    <aside className="grain relative isolate flex min-h-[340px] flex-col justify-between overflow-hidden rounded-3xl bg-ink-950 p-7 text-white shadow-lift sm:p-9 lg:p-11">
+    <aside className="grain relative isolate flex min-h-[340px] flex-col justify-between overflow-hidden rounded-3xl bg-ink-950 p-7 text-white shadow-lift sm:p-8 lg:p-9">
       <div
         className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-leaf-500/35 blur-3xl"
         aria-hidden="true"
@@ -61,7 +61,7 @@ function BrandPanel({ mode }) {
           initial={reduced ? undefined : { opacity: 0, y: 14 }}
           animate={reduced ? undefined : { opacity: 1, y: 0 }}
           transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-          className="mt-9 max-w-md font-display text-[clamp(2rem,4.4vw,3.25rem)] font-extrabold leading-[0.95] tracking-[-0.03em]"
+          className="mt-5 max-w-md font-display text-[clamp(1.9rem,3.2vw,2.6rem)] font-extrabold leading-[0.95] tracking-[-0.03em]"
         >
           {register ? (
             <>Join the loop.<br /><span className="bg-gradient-to-r from-lime-300 to-leaf-400 bg-clip-text text-transparent">Spark the action.</span></>
@@ -70,13 +70,13 @@ function BrandPanel({ mode }) {
           )}
         </motion.h1>
 
-        <p className="mt-4 max-w-sm text-sm leading-relaxed text-slate-400">
+        <p className="mt-3 max-w-sm text-sm leading-relaxed text-slate-400">
           {register
             ? 'Create a citizen account — report issues and verify cleanups in your ward.'
             : 'Sign in to report issues, track cleanups and earn impact points.'}
         </p>
 
-        <ul className="mt-8 space-y-3">
+        <ul className="mt-5 space-y-2.5">
           {PROOF.map((p) => (
             <li key={p.title} className="flex gap-3">
               <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-white/[0.07] text-lime-300 ring-1 ring-white/10">
@@ -91,7 +91,7 @@ function BrandPanel({ mode }) {
         </ul>
       </div>
 
-      <div className="relative mt-8 flex flex-wrap gap-2">
+      <div className="relative mt-5 flex flex-wrap gap-2">
         {[
           { k: '142', l: 'resolved' },
           { k: '88.5%', l: 'resolution rate' },
@@ -179,7 +179,7 @@ export default function Login() {
   }
 
   return (
-    <div className="mx-auto grid w-full max-w-6xl items-stretch gap-5 px-4 py-8 sm:px-6 lg:grid-cols-2 lg:gap-7 lg:py-14">
+    <div className="mx-auto grid w-full max-w-6xl items-stretch gap-5 px-4 py-6 sm:px-6 lg:grid-cols-2 lg:content-center lg:gap-7 lg:min-h-[calc(100svh-72px)]">
       <BrandPanel mode={mode} />
 
       <motion.div

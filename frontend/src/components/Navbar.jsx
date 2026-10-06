@@ -201,7 +201,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
 
   return (
     <header className="sticky top-0 z-navbar">
-      <div className={`mx-auto max-w-7xl px-3 sm:px-4 ${isLanding ? 'pt-2' : ''}`}>
+      <div className="mx-auto max-w-7xl px-3 pt-4 sm:px-4">
         <div className={`flex h-14 items-center gap-2 rounded-2xl border px-3 transition-all duration-300 ease-out-expo sm:gap-3 sm:px-4 ${surface}`}>
           {/* Logo */}
           <button
