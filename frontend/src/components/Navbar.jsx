@@ -59,6 +59,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
   const [userOpen, setUserOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
+  const [wsOpen, setWsOpen] = useState(false);
   const [notifs, setNotifs] = useState([]);
   const [unread, setUnread] = useState(0);
   const [scrolled, setScrolled] = useState(false);
@@ -75,6 +76,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
   const notifRef = useDismiss(notifOpen, () => setNotifOpen(false));
   const userRef = useDismiss(userOpen, () => setUserOpen(false));
   const demoRef = useDismiss(demoOpen, () => setDemoOpen(false));
+  const wsRef = useDismiss(wsOpen, () => setWsOpen(false));
   useLockBody(mobileOpen);
 
   const isLanding = location.pathname === '/';
@@ -109,6 +111,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
     setNotifOpen(false);
     setUserOpen(false);
     setDemoOpen(false);
+    setWsOpen(false);
   }, [location.pathname]);
 
   const handlePersona = async (roleId) => {
@@ -123,6 +126,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
     setActiveTab(tab);
     setMobileOpen(false);
     setNotifOpen(false);
+    setWsOpen(false);
     navigate(path);
   };
 
@@ -178,6 +182,11 @@ export default function Navbar({ activeTab, setActiveTab }) {
     : '';
 
   const visibleLinks = LINKS.filter(l => !l.roles || !user || role === 'ADMIN' || l.roles.includes(role));
+  // Public links stay flat in the bar; role portals are folded into one
+  // "Workspaces" menu so the row never gets crowded.
+  const primaryLinks = visibleLinks.filter(l => !l.roles);
+  const roleLinks = visibleLinks.filter(l => Boolean(l.roles));
+  const workspacesActive = roleLinks.some(l => location.pathname === l.path);
 
   const surface = !dark
     ? 'glass-light text-ink-900 shadow-soft'
@@ -213,8 +222,8 @@ export default function Navbar({ activeTab, setActiveTab }) {
           </button>
 
           {/* Desktop nav */}
-          <nav className="hidden min-w-0 flex-1 items-center gap-1 lg:flex" aria-label="Primary">
-            {visibleLinks.map(l => {
+          <nav className="hidden min-w-0 flex-1 items-center gap-0.5 xl:flex" aria-label="Primary">
+            {primaryLinks.map(l => {
               const active = location.pathname === l.path;
               return (
                 <button
@@ -234,7 +243,69 @@ export default function Navbar({ activeTab, setActiveTab }) {
                 </button>
               );
             })}
+
+            {/* Role portals, grouped into one menu */}
+            {roleLinks.length > 0 && (
+              <div className="relative" ref={wsRef}>
+                <button
+                  onClick={() => { setWsOpen(o => !o); setNotifOpen(false); setUserOpen(false); }}
+                  aria-haspopup="true"
+                  aria-expanded={wsOpen}
+                  className={`relative flex items-center gap-1 whitespace-nowrap rounded-xl px-3 py-2 text-sm font-semibold transition-colors duration-200 ${
+                    workspacesActive ? `${navActivePill} ${navActiveText}` : navIdle
+                  }`}
+                >
+                  <span className="relative">Workspaces</span>
+                  <ChevronDown
+                    className={`relative h-3.5 w-3.5 transition-transform duration-200 ${wsOpen ? 'rotate-180' : ''}`}
+                    strokeWidth={2}
+                  />
+                </button>
+
+                <AnimatePresence>
+                  {wsOpen && (
+                    <motion.div
+                      {...dropdownMotion}
+                      className="absolute left-0 top-full z-dropdown mt-2 w-72 max-w-[calc(100vw-2.5rem)] rounded-2xl border border-black/[0.06] bg-white/95 p-2 shadow-lift backdrop-blur-xl"
+                    >
+                      <div className="flex items-center justify-between px-2 py-1.5">
+                        <span className="eyebrow">Role portals</span>
+                        <span className="text-xs font-semibold text-slate-500">Pick a workspace</span>
+                      </div>
+                      {roleLinks.map(l => {
+                        const persona = PERSONAS.find(p => p.id === l.tab);
+                        const Icon = persona ? persona.icon : Shield;
+                        const activeLink = location.pathname === l.path;
+                        return (
+                          <button
+                            key={l.tab}
+                            onClick={() => handleNav(l.tab, l.path)}
+                            className={`flex w-full items-start gap-3 rounded-xl px-2.5 py-2.5 text-left transition-colors ${
+                              activeLink ? 'bg-leaf-50 text-leaf-900 ring-1 ring-leaf-200' : 'text-ink-800 hover:bg-paper-2'
+                            }`}
+                          >
+                            <span className={`mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-lg ring-1 ${persona ? persona.tint : 'bg-leaf-50 text-leaf-700 ring-leaf-200'}`}>
+                              <Icon className="h-4 w-4" strokeWidth={1.75} />
+                            </span>
+                            <span className="min-w-0">
+                              <span className="block text-sm font-bold">{l.label}</span>
+                              {persona && <span className="block text-xs text-slate-500">{persona.desc}</span>}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
           </nav>
+
+          {/* Separator between navigation and account actions */}
+          <span
+            aria-hidden="true"
+            className={`hidden h-6 w-px shrink-0 xl:block ${dark ? 'bg-white/15' : 'bg-black/10'}`}
+          />
 
           {/* Actions */}
           <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
@@ -383,7 +454,11 @@ export default function Navbar({ activeTab, setActiveTab }) {
                 onClick={() => { setDemoOpen(o => !o); setUserOpen(false); setNotifOpen(false); }}
                 title="One-click demo personas for evaluation"
                 aria-expanded={demoOpen}
-                className="flex items-center gap-1.5 whitespace-nowrap rounded-full bg-lime-400 px-2.5 py-1.5 text-xs font-extrabold text-ink-950 shadow-glow transition-all duration-200 hover:-translate-y-0.5 hover:bg-lime-300"
+                className={`flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-extrabold transition-all duration-200 hover:-translate-y-0.5 ${
+                  dark
+                    ? 'border border-white/15 bg-white/[0.06] text-lime-300 hover:bg-white/[0.12]'
+                    : 'border border-leaf-200 bg-leaf-50 text-leaf-700 hover:bg-leaf-100'
+                }`}
               >
                 <FlaskConical className="h-3.5 w-3.5" strokeWidth={2} />
                 <span className="hidden sm:inline">Demo</span>
@@ -433,7 +508,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
               onClick={() => setMobileOpen(o => !o)}
               aria-label="Toggle navigation menu"
               aria-expanded={mobileOpen}
-              className={`flex h-9 w-9 items-center justify-center rounded-xl border transition lg:hidden ${
+              className={`flex h-9 w-9 items-center justify-center rounded-xl border transition xl:hidden ${
                 dark ? 'border-white/15 bg-white/[0.06] text-white' : 'border-black/[0.06] bg-white/70 text-ink-800'
               }`}
             >
@@ -451,7 +526,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -18 }}
             transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 z-dropdown flex flex-col bg-ink-950/95 backdrop-blur-xl lg:hidden"
+            className="fixed inset-0 z-dropdown flex flex-col bg-ink-950/95 backdrop-blur-xl xl:hidden"
             aria-label="Mobile"
           >
             <div className="flex h-14 shrink-0 items-center justify-between px-4">
