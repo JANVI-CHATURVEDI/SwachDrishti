@@ -1,7 +1,7 @@
 from rest_framework import viewsets, generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny
 from django.db.models import Count
 from django.utils import timezone
 from datetime import timedelta
@@ -104,7 +104,6 @@ class WasteReportViewSet(viewsets.ModelViewSet):
             if instance.status != 'REPORTED':
                 raise PermissionDenied('Citizens can only edit reports still in REPORTED state.')
             disallowed = set(self.request.data.keys()) - self.CITIZEN_EDITABLE
-            # allow multipart noise keys
             disallowed -= {'image'}
             if disallowed:
                 raise PermissionDenied(f'Citizens cannot change: {", ".join(sorted(disallowed))}.')

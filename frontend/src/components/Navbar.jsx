@@ -80,8 +80,6 @@ export default function Navbar({ activeTab, setActiveTab }) {
   useLockBody(mobileOpen);
 
   const isLanding = location.pathname === '/';
-  // Landing always uses light-on-dark chrome: fully transparent over the hero,
-  // then a frosted dark pill once the page scrolls.
   const dark = isLanding;
 
   useEffect(() => {
@@ -182,10 +180,6 @@ export default function Navbar({ activeTab, setActiveTab }) {
     : '';
 
   const visibleLinks = LINKS.filter(l => !l.roles || !user || role === 'ADMIN' || l.roles.includes(role));
-  // Public links stay flat in the bar; role portals are folded into one
-  // "Workspaces" menu so the row never gets crowded. Admins get no
-  // Workspaces menu (other portals mean nothing to them) — only their
-  // own Command Center link, shown flat.
   const isAdmin = role === 'ADMIN';
   const primaryLinks = visibleLinks.filter(l => !l.roles || (isAdmin && l.roles.includes('ADMIN')));
   const roleLinks = visibleLinks.filter(l => Boolean(l.roles) && !isAdmin);
@@ -206,7 +200,6 @@ export default function Navbar({ activeTab, setActiveTab }) {
     <header className={`sticky top-0 z-navbar ${isLanding ? '' : 'bg-paper'}`}>
       <div className="mx-auto max-w-7xl px-3 pt-4 sm:px-4">
         <div className={`flex h-14 items-center gap-2 rounded-2xl border px-3 transition-all duration-300 ease-out-expo sm:gap-3 sm:px-4 ${surface}`}>
-          {/* Logo */}
           <button
             onClick={() => handleNav('landing', '/')}
             className="flex shrink-0 items-center gap-2.5 rounded-xl py-1 pr-1 text-left"
@@ -224,7 +217,6 @@ export default function Navbar({ activeTab, setActiveTab }) {
             </span>
           </button>
 
-          {/* Desktop nav */}
           <nav className="hidden min-w-0 flex-1 items-center gap-0.5 xl:flex" aria-label="Primary">
             {primaryLinks.map(l => {
               const active = location.pathname === l.path;
@@ -247,7 +239,6 @@ export default function Navbar({ activeTab, setActiveTab }) {
               );
             })}
 
-            {/* Role portals, grouped into one menu */}
             {roleLinks.length > 0 && (
               <div className="relative" ref={wsRef}>
                 <button
@@ -304,13 +295,11 @@ export default function Navbar({ activeTab, setActiveTab }) {
             )}
           </nav>
 
-          {/* Separator between navigation and account actions */}
           <span
             aria-hidden="true"
             className={`hidden h-6 w-px shrink-0 xl:block ${dark ? 'bg-white/15' : 'bg-black/10'}`}
           />
 
-          {/* Actions */}
           <div className="ml-auto flex shrink-0 items-center gap-1.5 sm:gap-2">
             {user && (
               <div className="relative" ref={notifRef}>
@@ -437,7 +426,6 @@ export default function Navbar({ activeTab, setActiveTab }) {
               </button>
             )}
 
-            {/* Light / dark theme toggle (persisted: swachdrishti.theme) */}
             <button
               onClick={toggleTheme}
               aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
@@ -451,7 +439,6 @@ export default function Navbar({ activeTab, setActiveTab }) {
                 : <Moon className="h-4 w-4" strokeWidth={1.75} />}
             </button>
 
-            {/* Demo persona switcher */}
             <div className="relative" ref={demoRef}>
               <button
                 onClick={() => { setDemoOpen(o => !o); setUserOpen(false); setNotifOpen(false); }}
@@ -521,7 +508,6 @@ export default function Navbar({ activeTab, setActiveTab }) {
         </div>
       </div>
 
-      {/* Mobile sheet */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.nav

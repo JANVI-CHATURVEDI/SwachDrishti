@@ -100,9 +100,6 @@ class WasteReport(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        # Sync public URLs AFTER the file is stored. Before the first save
-        # the FieldFile still carries the raw client filename (no upload_to
-        # prefix), so resolving .url early produces a bogus bucket-root URL.
         synced = {}
         if self.image:
             try:

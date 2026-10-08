@@ -155,7 +155,6 @@ export default function MapView({
             const radius = h.radius_meters || 150;
             return (
               <React.Fragment key={`hotspot-${h.id}`}>
-                {/* soft "gradient" fill: two stacked discs */}
                 <Circle
                   center={[h.latitude, h.longitude]}
                   radius={radius}

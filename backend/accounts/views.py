@@ -108,13 +108,6 @@ class WorkersListView(generics.ListAPIView):
         return User.objects.filter(role=User.ROLE_WORKER, is_blacklisted=False)
 
 class BlacklistStaffView(APIView):
-    """Blacklist / unblock a worker (supervisor+) or supervisor (admin only).
-
-    Supervisor may blacklist WORKERs only. Admin may blacklist WORKERs and
-    SUPERVISORs, never ADMINs (unless superuser) and never themselves.
-    Blacklisting deletes auth tokens (forced logout) and hides the account
-    from dispatch lists; existing task assignments stay for reassignment.
-    """
     permission_classes = [IsSupervisor]
 
     def post(self, request, pk):

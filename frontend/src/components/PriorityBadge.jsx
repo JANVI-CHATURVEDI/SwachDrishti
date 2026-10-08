@@ -34,7 +34,6 @@ const priorityConfigs = {
   },
 };
 
-/** Decorative 0-100 weight per factor so the popover can draw a mini bar chart. */
 function factorWeight(factor, idx) {
   const text = String(factor || '').toLowerCase();
   let score = 46 + ((text.length * 7) % 17);
@@ -46,7 +45,6 @@ function factorWeight(factor, idx) {
   return Math.max(18, Math.min(98, score - idx * 4));
 }
 
-/** Segmented 4-bar "signal strength" indicator. */
 function SignalBars({ level, className = '' }) {
   const cfg = priorityConfigs[level] || priorityConfigs.MEDIUM;
   return (

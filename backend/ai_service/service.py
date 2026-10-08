@@ -260,7 +260,6 @@ No markdown fences."""
             return '5+ bags'
         return '1-2 bags'
 
-    #: Preferred first, fallback second (separate free-tier quotas).
     CLEANUP_MODELS = ('gemini-2.5-flash', 'gemini-3.8-flash')
 
     @classmethod

@@ -38,7 +38,6 @@ export default function WorkerDashboard() {
           if (meRes.data?.user) refreshUser(meRes.data.user);
           setImpact({ stats: meRes.data?.stats || null, catalog: meRes.data?.badge_catalog?.worker || [] });
         } catch {
-          /* impact card stays hidden when logged out */
         }
       }
     } catch (err) {
@@ -52,7 +51,6 @@ export default function WorkerDashboard() {
     fetchTasks();
   }, []);
 
-  // Land straight on the route queue after login / persona switch.
   useEffect(() => {
     if (!loading && !scrolledToRoute.current && queueRef.current) {
       scrolledToRoute.current = true;
@@ -121,7 +119,6 @@ export default function WorkerDashboard() {
           if (meRes.data?.user) refreshUser(meRes.data.user);
           setImpact({ stats: meRes.data?.stats || null, catalog: meRes.data?.badge_catalog?.worker || [] });
         } catch {
-          /* points refresh best-effort */
         }
       }
       if (selectedTask?.id === taskId) {

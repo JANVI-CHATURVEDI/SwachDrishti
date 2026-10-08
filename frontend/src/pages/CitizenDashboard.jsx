@@ -9,7 +9,7 @@ import ImpactCard from '../components/ImpactCard';
 import { useAuth } from '../context/AuthContext';
 import { Plus, CheckCircle, RefreshCw, AlertTriangle, Sparkles, Navigation } from 'lucide-react';
 
-import { ChevronRight, X, MapPin, Camera } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { EmptyState, loadJSON, saveJSON } from '../components/ui';
 import { Reveal } from '../components/motion';
 import { motion } from 'framer-motion';
@@ -30,11 +30,9 @@ export default function CitizenDashboard() {
 
   const [viewTab, setViewTab] = useState('reports');
   const [openReport, setOpenReport] = useState(null);
-  const [brokenPhotoId, setBrokenPhotoId] = useState(null);
   const [mapFocus, setMapFocus] = useState(null);
 
   const openReportDetail = (r) => {
-    setBrokenPhotoId(null);
     setOpenReport(r);
     if (r && Number.isFinite(Number(r.latitude)) && Number.isFinite(Number(r.longitude))) {
       setMapFocus({ lat: Number(r.latitude), lng: Number(r.longitude), key: Date.now() });
@@ -86,7 +84,6 @@ export default function CitizenDashboard() {
         if (meRes.data?.user) refreshUser(meRes.data.user);
         setImpact({ stats: meRes.data?.stats || null, catalog: meRes.data?.badge_catalog?.citizen || [] });
       } catch {
-        /* impact card stays hidden when logged out */
       }
       setReports(repRes.data?.results || repRes.data || []);
       setPickups(pickRes.data?.results || pickRes.data || []);
@@ -502,7 +499,6 @@ export default function CitizenDashboard() {
               ></textarea>
             </div>
 
-            {}
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Photo Evidence <span className="font-normal text-slate-500">(optional, improves AI accuracy)</span>
@@ -811,7 +807,6 @@ export default function CitizenDashboard() {
                 <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
                   <PriorityBadge level={r.priority_level} score={r.priority_score} factors={r.priority_factors} />
 
-                  {}
                   {r.status === 'RESOLVED' && !(r.citizen_verification || r.verification) && (
                     <button
                       onClick={(e) => { e.stopPropagation(); setVerifyingReport(r); }}
@@ -887,173 +882,7 @@ export default function CitizenDashboard() {
               Confirm Cleanup
             </button>
           ) : null}
-        >
-          <div
-            className="modal-pop my-auto max-h-[85vh] w-full max-w-lg shrink-0 overflow-y-auto rounded-3xl bg-white shadow-lift"
-          >
-            <div className="relative bg-slate-100">
-              {(openReport.image_url || openReport.image) && brokenPhotoId !== openReport.id ? (
-                <img
-                  src={openReport.image_url || openReport.image}
-                  alt={openReport.title}
-                  className="w-full h-52 object-cover"
-                  onError={(e) => {
-                    const el = e.currentTarget;
-                    const alt = openReport.image && openReport.image !== (openReport.image_url || openReport.image)
-                      ? openReport.image : '';
-                    if (alt && !el.dataset.triedFallback) {
-                      el.dataset.triedFallback = '1';
-                      el.src = alt;               
-                    } else {
-                      setBrokenPhotoId(openReport.id);   
-                    }
-                  }}
-                />
-              ) : (
-                <div className="w-full h-36 flex items-center justify-center text-slate-500 text-xs font-semibold">
-                  <Camera className="w-5 h-5 mr-2" />
-                  {(openReport.image_url || openReport.image)
-                    ? 'Photo could not be loaded'
-                    : 'No photo attached'}
-                </div>
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent pointer-events-none" />
-              <button
-                onClick={() => setOpenReport(null)}
-                aria-label="Close"
-                className="absolute top-3 right-3 p-1.5 rounded-full bg-white/90 text-slate-700 hover:bg-white transition"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              <div className="absolute bottom-3 left-4 right-4 text-white pointer-events-none">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="font-bold text-base leading-tight drop-shadow">{openReport.title}</span>
-                  <span className="text-xs font-black bg-white/25 rounded px-1.5 py-0.5">#{openReport.id}</span>
-                </div>
-                <div className="text-xs text-white/85 mt-0.5">
-                  {openReport.category_details?.name || 'General'} • {new Date(openReport.created_at).toLocaleString()}
-                </div>
-              </div>
-            </div>
-
-            <div className="p-5 space-y-4 text-xs">
-              <div className="flex flex-wrap items-center gap-2">
-                <StatusBadge status={openReport.status} />
-                <PriorityBadge
-                  level={openReport.priority_level}
-                  score={openReport.priority_score}
-                  factors={openReport.priority_factors}
-                />
-              </div>
-
-              <p className="text-slate-700 leading-relaxed">
-                {openReport.description || 'No extended description was provided for this issue.'}
-              </p>
-
-              {(openReport.after_image_url || openReport.after_image) && (
-                <div className="rounded-xl overflow-hidden border border-emerald-200">
-                  <img
-                    src={openReport.after_image_url || openReport.after_image}
-                    alt="Cleanup proof uploaded by the field worker"
-                    className="w-full h-44 object-cover"
-                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                  />
-                  <div className="px-3 py-1.5 bg-emerald-50 text-emerald-700 text-xs font-bold">
-                    Cleanup proof · uploaded by field worker
-                    {openReport.cleanup_score !== null && openReport.cleanup_score !== undefined
-                      ? ` · AI score ${openReport.cleanup_score}/100` : ''}
-                  </div>
-                </div>
-              )}
-
-              <div className="p-3 bg-slate-50 rounded-xl space-y-1.5">
-                <div className="flex items-start gap-1.5 text-slate-700 font-semibold">
-                  <MapPin className="w-3.5 h-3.5 mt-0.5 text-emerald-600 shrink-0" />
-                  <span>{openReport.address}</span>
-                </div>
-                <div className="text-xs text-slate-500 pl-5">
-                  {Number(openReport.latitude).toFixed(5)}, {Number(openReport.longitude).toFixed(5)}
-                  {openReport.zone ? ` • ${openReport.zone}` : ''}
-                </div>
-              </div>
-
-              {Array.isArray(openReport.priority_factors) && openReport.priority_factors.length > 0 && (
-                <div>
-                  <div className="font-bold text-slate-900 mb-1.5 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                    Why this priority?
-                  </div>
-                  <ul className="space-y-1 text-slate-600">
-                    {openReport.priority_factors.map((f, i) => (
-                      <li key={i} className="flex gap-1.5">
-                        <span className="text-emerald-500">•</span>
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="p-2 bg-slate-50 rounded-lg">
-                  <div className="text-slate-500 uppercase font-bold text-xs">Reported</div>
-                  <div className="text-slate-700 font-semibold">
-                    {new Date(openReport.created_at).toLocaleString()}
-                  </div>
-                </div>
-                <div className="p-2 bg-slate-50 rounded-lg">
-                  <div className="text-slate-500 uppercase font-bold text-xs">Last update</div>
-                  <div className="text-slate-700 font-semibold">
-                    {new Date(openReport.updated_at).toLocaleString()}
-                  </div>
-                </div>
-                {openReport.resolved_at && (
-                  <div className="p-2 bg-emerald-50 rounded-lg col-span-2">
-                    <div className="text-emerald-500 uppercase font-bold text-xs">Resolved</div>
-                    <div className="text-emerald-700 font-semibold">
-                      {new Date(openReport.resolved_at).toLocaleString()}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {openReport.is_duplicate && (
-                <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-800">
-                  Flagged as a duplicate of another report nearby.
-                </div>
-              )}
-              {(openReport.citizen_verification || openReport.verification) ? (
-                <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800">
-                  ✓ Confirmed cleaned by a citizen
-                  {openReport.citizen_verification?.feedback
-                    ? ` — "${openReport.citizen_verification.feedback}"`
-                    : ''}
-                </div>
-              ) : openReport.status === 'RESOLVED' ? (
-                <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-600">
-                  Waiting for a citizen to confirm this cleanup.
-                </div>
-              ) : null}
-
-              <div className="flex justify-end gap-3 pt-1">
-                <button
-                  onClick={() => setOpenReport(null)}
-                  className="btn-outline btn-sm"
-                >
-                  Close
-                </button>
-                {openReport.status === 'RESOLVED' && !(openReport.citizen_verification || openReport.verification) && (
-                  <button
-                    onClick={() => { setVerifyingReport(openReport); setOpenReport(null); }}
-                    className="btn-primary btn-sm"
-                  >
-                    Confirm Cleanup
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </ReportDetailModal>
+        />
       )}
 
       {verifyingReport && (
